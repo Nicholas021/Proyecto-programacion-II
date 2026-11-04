@@ -1,0 +1,9 @@
+# ==========================================
+#   Facturacion Electronica De Venta
+#   Generado por MiniGan.INC
+#   Correo: MiniGan.Outlook.com
+#   PQR: 3**********
+# ==========================================
+Granja: pablito
+VACAS: 5
+Precio_por_libra: 24000.0
