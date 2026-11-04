@@ -10,8 +10,11 @@ generacion de facturas.
 - **Registro de bovinos** mediante formulario con hoja tecnica basica.
 - **Consulta de animales** con busqueda por nombre/identificacion y filtros por
   categorias: sexo, raza, origen, proposito, estado y color.
-- **Hoja tecnica** del animal seleccionado (incluye edad calculada).
-- **Generacion de factura** en formato YAML.
+- **Hoja tecnica** del animal en una ventana aparte (doble clic en la tabla o
+  boton **Ver hoja tecnica**; incluye edad calculada).
+- **Generacion de factura** en formato YAML con granja, comprador, fecha,
+  vacas y precio por libra. La factura se abre en una ventana propia y permite
+  abrir el archivo con el Bloc de notas.
 - Los datos se guardan en `Hoja_datos.json`; las cuentas en `Cuentas.json`.
 
 ## Requisitos
@@ -59,7 +62,8 @@ La edad se calcula automaticamente a partir de la fecha de nacimiento.
 - Los botones de categoria muestran una lista con los valores existentes.
 - Al elegir un valor se aplica el filtro; los filtros se combinan.
 - **Todos** limpia la categoria actual y **Limpiar filtros** limpia todo.
-- Al seleccionar una fila se muestra la hoja tecnica completa del bovino.
+- Con doble clic sobre la tabla (o el boton **Ver hoja tecnica**) se abre la
+  hoja tecnica completa del bovino en su propia ventana.
 
 ## Estructura de `Hoja_datos.json`
 

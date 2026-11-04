@@ -1,6 +1,7 @@
 from datetime import date, datetime
 from pathlib import Path
 import json
+import os
 
 import customtkinter as ctk
 import yaml
@@ -431,7 +432,7 @@ def abrir_menu_principal(root, usuario):
     principal.focus_force()
 
 def cerrar_sesion(root, principal):
-    for atributo in ("ventana_catalogo", "ventana_registro_animal", "ventana_factura"):
+    for atributo in ("ventana_catalogo", "ventana_registro_animal", "ventana_factura", "ventana_factura_vista"):
         ventana = getattr(principal, atributo, None)
         if ventana is not None:
             try:
@@ -709,7 +710,8 @@ def abrir_catalogo(principal):
     panel_valores = ctk.CTkScrollableFrame(izquierdo, height=170, fg_color=COLOR_TARJETA, bg_color=COLOR_TARJETA, corner_radius=12, scrollbar_button_color=COLOR_BORDE, scrollbar_button_hover_color=COLOR_PRIMARIO)
     panel_valores.pack(fill="both", expand=True, padx=12, pady=(0, 6))
 
-    boton(izquierdo, "Limpiar filtros", lambda: limpiar_filtros(), "suave", alto=34, tam=12).pack(fill="x", padx=12, pady=(6, 4))
+    boton(izquierdo, "Ver hoja técnica", lambda: mostrar_hoja(), "primario", alto=34, tam=12).pack(fill="x", padx=12, pady=(6, 4))
+    boton(izquierdo, "Limpiar filtros", lambda: limpiar_filtros(), "suave", alto=34, tam=12).pack(fill="x", padx=12, pady=(0, 4))
     boton(izquierdo, "Volver", lambda: cerrar_catalogo(), "texto", alto=34, tam=12).pack(fill="x", padx=12, pady=(0, 14))
 
     derecho = ctk.CTkFrame(panel, fg_color="transparent")
@@ -742,19 +744,9 @@ def abrir_catalogo(principal):
     tabla.grid(row=0, column=0, sticky="nsew")
     barra.grid(row=0, column=1, sticky="ns")
 
-    detalle = ctk.CTkTextbox(derecho, height=170, font=(FUENTE, 13), wrap="word", corner_radius=14, border_width=1, border_color=COLOR_BORDE, fg_color="white")
-    detalle.grid(row=1, column=0, sticky="ew", pady=(10, 0))
-    detalle.configure(state="disabled")
-
     filtros = {clave: None for clave, _ in CAMPOS_FILTRO}
     categoria_actual = None
     animales_filtrados = []
-
-    def poner_detalle(texto):
-        detalle.configure(state="normal")
-        detalle.delete("1.0", "end")
-        detalle.insert("1.0", texto)
-        detalle.configure(state="disabled")
 
     def actualizar_lista():
         nonlocal animales_filtrados
@@ -775,21 +767,70 @@ def abrir_catalogo(principal):
             ))
 
         contador.configure(text=f"{len(animales_filtrados)} de {len(todos)} animales")
-        if animales_filtrados:
-            poner_detalle("Selecciona un animal para ver su hoja técnica.")
-        else:
-            poner_detalle("No hay animales que coincidan con los filtros.")
 
-    def mostrar_seleccion(event=None):
+    def indice_seleccionado():
         seleccion = tabla.selection()
         if not seleccion:
-            return
+            return None
         try:
             indice = int(seleccion[0])
         except ValueError:
-            return
+            return None
         if 0 <= indice < len(animales_filtrados):
-            poner_detalle(formatear_hoja(animales_filtrados[indice]))
+            return indice
+        return None
+
+    def mostrar_hoja(evento=None):
+        indice = indice_seleccionado()
+        if indice is None:
+            return
+        animal = animales_filtrados[indice]
+        titulo = f"Hoja técnica - {animal.get('nombre', '')}"
+        contenido = formatear_hoja(animal)
+
+        if ventana_abierta(catalogo, "ventana_hoja"):
+            catalogo.ventana_hoja.mostrar_hoja(titulo, contenido)
+            return
+
+        vista = nueva_ventana(catalogo, titulo, 900, 720)
+
+        panel_hoja = tarjeta(vista)
+        panel_hoja.place(relx=0.5, rely=0.5, anchor="center", relwidth=0.9, relheight=0.92)
+
+        cabecera = ctk.CTkFrame(panel_hoja, fg_color="transparent")
+        cabecera.pack(fill="x", padx=22, pady=(18, 8))
+        etiqueta(cabecera, "Hoja técnica del bovino", 24, COLOR_TEXTO, negrita=True).pack(side="left")
+        etiqueta(cabecera, animal.get("identificacion", ""), 13, COLOR_SECUNDARIO).pack(side="right")
+
+        caja = ctk.CTkTextbox(panel_hoja, font=("Consolas", 12), wrap="none", corner_radius=14, border_width=1, border_color=COLOR_BORDE, fg_color="white")
+        caja.pack(fill="both", expand=True, padx=22, pady=(0, 12))
+
+        pie = ctk.CTkFrame(panel_hoja, fg_color="transparent")
+        pie.pack(fill="x", padx=22, pady=(0, 16))
+
+        def cerrar_hoja():
+            try:
+                vista.destroy()
+            except Exception:
+                pass
+            catalogo.ventana_hoja = None
+
+        def mostrar_hoja_texto(titulo, contenido):
+            vista.title(titulo)
+            caja.configure(state="normal")
+            caja.delete("1.0", "end")
+            caja.insert("1.0", contenido)
+            caja.configure(state="disabled")
+
+        boton(pie, "Cerrar", lambda: cerrar_hoja(), "primario", ancho=120, alto=38, tam=13).pack(side="right")
+
+        vista.protocol("WM_DELETE_WINDOW", cerrar_hoja)
+        vista.mostrar_hoja = mostrar_hoja_texto
+        vista.caja = caja
+        catalogo.ventana_hoja = vista
+
+        mostrar_hoja_texto(titulo, contenido)
+        vista.focus_force()
 
     def aplicar_valor(valor):
         if categoria_actual is None:
@@ -844,7 +885,8 @@ def abrir_catalogo(principal):
             pass
         principal.ventana_catalogo = None
 
-    tabla.bind("<<TreeviewSelect>>", mostrar_seleccion)
+    tabla.bind("<Double-1>", mostrar_hoja)
+    tabla.bind("<Return>", mostrar_hoja)
     catalogo.protocol("WM_DELETE_WINDOW", cerrar_catalogo)
     principal.ventana_catalogo = catalogo
 
@@ -852,7 +894,6 @@ def abrir_catalogo(principal):
     catalogo.tabla = tabla
     catalogo.entry_busqueda = entry_busqueda
     catalogo.panel_valores = panel_valores
-    catalogo.detalle = detalle
     catalogo.contador = contador
     catalogo.filtros = filtros
     catalogo.botones_categoria = botones_categoria
@@ -860,7 +901,7 @@ def abrir_catalogo(principal):
     catalogo.seleccionar_categoria = seleccionar_categoria
     catalogo.aplicar_valor = aplicar_valor
     catalogo.limpiar_filtros = limpiar_filtros
-    catalogo.mostrar_seleccion = mostrar_seleccion
+    catalogo.mostrar_hoja = mostrar_hoja
     catalogo.recargar = recargar
 
     actualizar_lista()
@@ -871,50 +912,104 @@ def abrir_facturacion(principal):
     if ventana_abierta(principal, "ventana_factura"):
         return
 
-    factura = nueva_ventana(principal, "Generar factura", 1280, 800)
+    factura = nueva_ventana(principal, "Generar factura", 1080, 740)
 
-    panel = tarjeta(factura)
-    panel.place(relx=0.5, rely=0.5, anchor="center", relwidth=0.9, relheight=0.86)
-    panel.grid_columnconfigure(0, weight=0, minsize=360)
-    panel.grid_columnconfigure(1, weight=1)
-    panel.grid_rowconfigure(1, weight=1)
+    panel = tarjeta(factura, width=470, height=640)
+    panel.place(relx=0.5, rely=0.5, anchor="center")
+    panel.pack_propagate(False)
 
-    cabecera = ctk.CTkFrame(panel, fg_color="transparent")
-    cabecera.grid(row=0, column=0, columnspan=2, sticky="ew", padx=28, pady=(22, 10))
-    etiqueta(cabecera, "Generar factura", 26, COLOR_TEXTO, negrita=True).pack(anchor="w")
-    etiqueta(cabecera, "Completa los datos de la venta.", 13, COLOR_SECUNDARIO).pack(anchor="w", pady=(2, 0))
+    etiqueta(panel, "Generar factura", 28, COLOR_TEXTO, negrita=True).pack(pady=(28, 2))
+    etiqueta(panel, "Datos de la venta de bovinos.", 13, COLOR_SECUNDARIO).pack(pady=(0, 16))
 
-    izquierdo = ctk.CTkFrame(panel, fg_color="transparent")
-    izquierdo.grid(row=1, column=0, sticky="nsew", padx=(28, 14), pady=(0, 22))
+    etiqueta(panel, "Granja", 12, COLOR_SECUNDARIO, anchor="w").pack(fill="x", padx=44)
+    entry_granja = entrada(panel, "Nombre de la granja")
+    entry_granja.pack(fill="x", padx=44, pady=(3, 10))
 
-    etiqueta(izquierdo, "Granja", 12, COLOR_SECUNDARIO, anchor="w").pack(fill="x")
-    entry_granja = entrada(izquierdo, "Nombre de la granja")
-    entry_granja.pack(fill="x", pady=(3, 12))
+    etiqueta(panel, "Comprador", 12, COLOR_SECUNDARIO, anchor="w").pack(fill="x", padx=44)
+    entry_comprador = entrada(panel, "Nombre del comprador")
+    entry_comprador.pack(fill="x", padx=44, pady=(3, 10))
 
-    etiqueta(izquierdo, "Número de vacas", 12, COLOR_SECUNDARIO, anchor="w").pack(fill="x")
-    entry_vacas = entrada(izquierdo, "Ej: 5")
-    entry_vacas.pack(fill="x", pady=(3, 12))
+    etiqueta(panel, "Fecha", 12, COLOR_SECUNDARIO, anchor="w").pack(fill="x", padx=44)
+    entry_fecha = entrada(panel, "AAAA-MM-DD")
+    entry_fecha.pack(fill="x", padx=44, pady=(3, 10))
+    entry_fecha.insert(0, date.today().isoformat())
 
-    etiqueta(izquierdo, "Precio por libra", 12, COLOR_SECUNDARIO, anchor="w").pack(fill="x")
-    entry_precio = entrada(izquierdo, "Ej: 12000")
-    entry_precio.pack(fill="x", pady=(3, 18))
+    etiqueta(panel, "Número de vacas", 12, COLOR_SECUNDARIO, anchor="w").pack(fill="x", padx=44)
+    entry_vacas = entrada(panel, "Ej: 5")
+    entry_vacas.pack(fill="x", padx=44, pady=(3, 10))
 
-    mensaje = etiqueta(izquierdo, "", 12, COLOR_PELIGRO, wraplength=340, justify="left")
-    mensaje.pack(fill="x", pady=(0, 10))
+    etiqueta(panel, "Precio por libra", 12, COLOR_SECUNDARIO, anchor="w").pack(fill="x", padx=44)
+    entry_precio = entrada(panel, "Ej: 12000")
+    entry_precio.pack(fill="x", padx=44, pady=(3, 12))
 
-    def mostrar(texto):
-        caja_factura.configure(state="normal")
-        caja_factura.delete("1.0", "end")
-        caja_factura.insert("1.0", texto)
-        caja_factura.configure(state="disabled")
+    mensaje = etiqueta(panel, "", 12, COLOR_PELIGRO, wraplength=370, justify="left")
+    mensaje.pack(fill="x", padx=44, pady=(0, 6))
 
-    def archivos():
+    def abrir_vista_factura(texto):
+        if ventana_abierta(principal, "ventana_factura_vista"):
+            principal.ventana_factura_vista.mostrar_factura(texto)
+            return
+
+        vista = nueva_ventana(principal, "Factura", 980, 760)
+
+        panel_vista = tarjeta(vista)
+        panel_vista.place(relx=0.5, rely=0.5, anchor="center", relwidth=0.92, relheight=0.9)
+
+        cabecera = ctk.CTkFrame(panel_vista, fg_color="transparent")
+        cabecera.pack(fill="x", padx=22, pady=(18, 8))
+        etiqueta(cabecera, "Factura", 24, COLOR_TEXTO, negrita=True).pack(side="left")
+        etiqueta(cabecera, f"Archivo: {RUTA_FACTURA.name}", 12, COLOR_SECUNDARIO).pack(side="right")
+
+        caja = ctk.CTkTextbox(panel_vista, font=("Consolas", 12), wrap="none", corner_radius=14, border_width=1, border_color=COLOR_BORDE, fg_color="white")
+        caja.pack(fill="both", expand=True, padx=22, pady=(0, 12))
+
+        pie = ctk.CTkFrame(panel_vista, fg_color="transparent")
+        pie.pack(fill="x", padx=22, pady=(0, 16))
+
+        def mostrar_factura(texto_vista):
+            caja.configure(state="normal")
+            caja.delete("1.0", "end")
+            caja.insert("1.0", texto_vista)
+            caja.configure(state="disabled")
+
+        def cerrar_vista():
+            try:
+                vista.destroy()
+            except Exception:
+                pass
+            principal.ventana_factura_vista = None
+
+        def abrir_archivo():
+            try:
+                os.startfile(RUTA_FACTURA)
+            except Exception:
+                pass
+
+        boton(pie, "Cerrar", lambda: cerrar_vista(), "primario", ancho=120, alto=38, tam=13).pack(side="right")
+        boton(pie, "Abrir archivo", lambda: abrir_archivo(), "suave", ancho=140, alto=38, tam=13).pack(side="right", padx=(0, 8))
+
+        vista.protocol("WM_DELETE_WINDOW", cerrar_vista)
+        vista.mostrar_factura = mostrar_factura
+        vista.caja = caja
+        principal.ventana_factura_vista = vista
+
+        mostrar_factura(texto)
+        vista.focus_force()
+
+    def generar():
         granja = entry_granja.get().strip()
+        comprador = entry_comprador.get().strip()
+        fecha_texto = entry_fecha.get().strip()
         vacas_texto = entry_vacas.get().strip()
         precio_texto = entry_precio.get().strip().replace(",", ".")
 
-        if not granja or not vacas_texto or not precio_texto:
-            mensaje.configure(text="Llena los tres campos.")
+        if not granja or not comprador or not vacas_texto or not precio_texto:
+            mensaje.configure(text="Llena todos los campos.")
+            return
+
+        fecha = validar_fecha(fecha_texto)
+        if fecha is None:
+            mensaje.configure(text="La fecha debe tener el formato AAAA-MM-DD.")
             return
 
         try:
@@ -928,16 +1023,13 @@ def abrir_facturacion(principal):
             mensaje.configure(text="Las vacas y el precio deben ser mayores que cero.")
             return
 
-        try:
-            datos = yaml.safe_load(RUTA_FACTURA.read_text(encoding="utf-8")) or {}
-        except (OSError, yaml.YAMLError):
-            datos = {}
-        if not isinstance(datos, dict):
-            datos = {}
-
-        datos["Granja"] = granja
-        datos["VACAS"] = vacas
-        datos["Precio_por_libra"] = precio
+        datos = {
+            "Granja": granja,
+            "Comprador": comprador,
+            "Fecha": fecha.isoformat(),
+            "VACAS": vacas,
+            "Precio_por_libra": precio,
+        }
 
         inicio = "# ==========================================\n#   Facturacion Electronica De Venta\n#   Generado por MiniGan.INC\n#   Correo: MiniGan@outlook.com\n#   PQR: 3**********\n# ==========================================\n"
 
@@ -947,7 +1039,7 @@ def abrir_facturacion(principal):
             mensaje.configure(text=f"No se pudo guardar la factura: {error}")
             return
 
-        mostrar(RUTA_FACTURA.read_text(encoding="utf-8"))
+        abrir_vista_factura(RUTA_FACTURA.read_text(encoding="utf-8"))
         mensaje.configure(text="Factura generada correctamente.", text_color=COLOR_EXITO)
 
     def cerrar():
@@ -957,24 +1049,20 @@ def abrir_facturacion(principal):
             pass
         principal.ventana_factura = None
 
-    boton(izquierdo, "Generar factura", lambda: archivos(), "primario", alto=42).pack(fill="x")
-    boton(izquierdo, "Volver", lambda: cerrar(), "texto", alto=34).pack(fill="x", pady=(6, 0))
-
-    caja_factura = ctk.CTkTextbox(panel, width=420, height=380, font=("Consolas", 13), wrap="none", corner_radius=14, border_width=1, border_color=COLOR_BORDE, fg_color="white")
-    caja_factura.grid(row=1, column=1, sticky="nsew", padx=(14, 28), pady=(0, 22))
-    caja_factura.insert("1.0", "Aquí aparecerá la factura cuando pulses Generar.")
-    caja_factura.configure(state="disabled")
+    boton(panel, "Generar factura", lambda: generar(), "primario").pack(fill="x", padx=44)
+    boton(panel, "Volver", lambda: cerrar(), "texto", alto=34).pack(fill="x", padx=44, pady=(6, 0))
 
     factura.protocol("WM_DELETE_WINDOW", cerrar)
     principal.ventana_factura = factura
 
     # Referencias útiles para pruebas.
     factura.entry_granja = entry_granja
+    factura.entry_comprador = entry_comprador
+    factura.entry_fecha = entry_fecha
     factura.entry_vacas = entry_vacas
     factura.entry_precio = entry_precio
-    factura.caja = caja_factura
     factura.mensaje = mensaje
-    factura.generar = archivos
+    factura.generar = generar
 
     factura.focus_force()
 
