@@ -26,34 +26,13 @@ COLOR_BOTON_ACTIVO = "#5aa9c9"
 COLOR_TEXTO = "black"
 
 SEXOS = ["Hembra", "Macho"]
-RAZAS = [
-    "Holstein",
-    "Jersey",
-    "Brahman",
-    "Angus",
-    "Hereford",
-    "Nelore",
-    "Gyr",
-    "Simmental",
-    "Normando",
-    "Cebú",
-    "Mestizo",
-    "Otra",
-]
+RAZAS = ["Holstein", "Jersey", "Brahman", "Angus", "Hereford", "Nelore", "Gyr", "Simmental", "Normando", "Cebú", "Mestizo", "Otra"]
 PROPOSITOS = ["Leche", "Carne", "Doble propósito"]
 ORIGENES = ["Criado en la granja", "Comprado", "Donado", "Otro"]
 ESTADOS = ["Activo", "Vendido", "Muerto"]
 
-# Categorías que se pueden filtrar en el catálogo.
 # La clave coincide con el nombre del campo guardado en Hoja_datos.json.
-CAMPOS_FILTRO = [
-    ("sexo", "Sexo"),
-    ("raza", "Raza"),
-    ("origen", "Origen"),
-    ("proposito", "Propósito"),
-    ("estado", "Estado"),
-    ("color", "Color"),
-]
+CAMPOS_FILTRO = [("sexo", "Sexo"), ("raza", "Raza"), ("origen", "Origen"), ("proposito", "Propósito"), ("estado", "Estado"), ("color", "Color")]
 
 _imagen_fondo = None
 
@@ -67,11 +46,7 @@ def crear_fondo(ventana):
     try:
         if _imagen_fondo is None:
             imagen = Image.open(RUTA_IMAGEN)
-            _imagen_fondo = ctk.CTkImage(
-                light_image=imagen,
-                dark_image=imagen,
-                size=(1280, 720),
-            )
+            _imagen_fondo = ctk.CTkImage(light_image=imagen, dark_image=imagen, size=(1280, 720))
     except Exception:
         return None
 
@@ -209,11 +184,7 @@ def filtrar_animales(animales, filtros, texto=""):
 
 
 def valores_categoria(animales, categoria):
-    valores = {
-        str(animal.get(categoria, "")).strip()
-        for animal in animales
-        if str(animal.get(categoria, "")).strip()
-    }
+    valores = {str(animal.get(categoria, "")).strip() for animal in animales if str(animal.get(categoria, "")).strip()}
     return sorted(valores, key=str.lower)
 
 
@@ -257,75 +228,25 @@ def crear_ventana_login():
     root.minsize(1000, 650)
     crear_fondo(root)
 
-    titulo = ctk.CTkLabel(
-        root,
-        text="Inicio de sesión",
-        font=("Arial", 56),
-        fg_color="transparent",
-        bg_color=COLOR_FONDO,
-        text_color=COLOR_TEXTO,
-    )
+    titulo = ctk.CTkLabel(root, text="Inicio de sesión", font=("Arial", 56), fg_color="transparent", bg_color=COLOR_FONDO, text_color=COLOR_TEXTO)
     titulo.place(relx=0.5, rely=0.15, anchor="center")
 
-    etiqueta_usuario = ctk.CTkLabel(
-        root,
-        text="Digite su usuario",
-        font=("Arial", 30),
-        fg_color="transparent",
-        bg_color=COLOR_FONDO,
-        text_color=COLOR_TEXTO,
-    )
+    etiqueta_usuario = ctk.CTkLabel(root, text="Digite su usuario", font=("Arial", 30), fg_color="transparent", bg_color=COLOR_FONDO, text_color=COLOR_TEXTO)
     etiqueta_usuario.place(relx=0.5, rely=0.28, anchor="center")
 
-    entry_usuario = ctk.CTkEntry(
-        root,
-        font=("Arial", 26),
-        fg_color="transparent",
-        text_color=COLOR_TEXTO,
-        width=420,
-    )
+    entry_usuario = ctk.CTkEntry(root, font=("Arial", 26), fg_color="transparent", text_color=COLOR_TEXTO, width=420)
     entry_usuario.place(relx=0.5, rely=0.38, anchor="center")
 
-    etiqueta_contrasena = ctk.CTkLabel(
-        root,
-        text="Digite su contraseña",
-        font=("Arial", 30),
-        fg_color="transparent",
-        bg_color=COLOR_FONDO,
-        text_color=COLOR_TEXTO,
-    )
+    etiqueta_contrasena = ctk.CTkLabel(root, text="Digite su contraseña", font=("Arial", 30), fg_color="transparent", bg_color=COLOR_FONDO, text_color=COLOR_TEXTO)
     etiqueta_contrasena.place(relx=0.5, rely=0.50, anchor="center")
 
-    entry_contrasena = ctk.CTkEntry(
-        root,
-        font=("Arial", 26),
-        fg_color="transparent",
-        text_color=COLOR_TEXTO,
-        show="*",
-        width=420,
-    )
+    entry_contrasena = ctk.CTkEntry(root, font=("Arial", 26), fg_color="transparent", text_color=COLOR_TEXTO, show="*", width=420)
     entry_contrasena.place(relx=0.5, rely=0.60, anchor="center")
 
-    boton_ingresar = ctk.CTkButton(
-        root,
-        text="Iniciar sesión",
-        font=("Arial", 26),
-        fg_color=COLOR_BOTON,
-        text_color=COLOR_TEXTO,
-        width=420,
-        height=50,
-        command=lambda: iniciar_sesion(root),
-    )
+    boton_ingresar = ctk.CTkButton(root, text="Iniciar sesión", font=("Arial", 26), fg_color=COLOR_BOTON, text_color=COLOR_TEXTO, width=420, height=50, command=lambda: iniciar_sesion(root))
     boton_ingresar.place(relx=0.5, rely=0.72, anchor="center")
 
-    boton_crear = ctk.CTkButton(
-        root,
-        text="Crear usuario",
-        font=("Arial", 26),
-        width=420,
-        height=50,
-        command=lambda: abrir_registro_cuenta(root),
-    )
+    boton_crear = ctk.CTkButton(root, text="Crear usuario", font=("Arial", 26), width=420, height=50, command=lambda: abrir_registro_cuenta(root))
     boton_crear.place(relx=0.5, rely=0.82, anchor="center")
 
     root.entry_usuario = entry_usuario
@@ -356,13 +277,7 @@ def iniciar_sesion(root):
     contrasena = root.entry_contrasena.get()
 
     if not usuario or not contrasena:
-        root.error_usuario = ctk.CTkLabel(
-            root,
-            text="Digite usuario y contraseña",
-            font=("Arial", 20),
-            text_color="red",
-            fg_color="transparent",
-        )
+        root.error_usuario = ctk.CTkLabel(root, text="Digite usuario y contraseña", font=("Arial", 20), text_color="red", fg_color="transparent")
         root.error_usuario.place(relx=0.5, rely=0.92, anchor="center")
         return
 
@@ -371,22 +286,10 @@ def iniciar_sesion(root):
     if usuario in usuarios and usuarios[usuario] == contrasena:
         abrir_menu_principal(root, usuario)
     elif usuario in usuarios:
-        root.error_contrasena = ctk.CTkLabel(
-            root,
-            text="Contraseña incorrecta",
-            font=("Arial", 20),
-            text_color="red",
-            fg_color="transparent",
-        )
+        root.error_contrasena = ctk.CTkLabel(root, text="Contraseña incorrecta", font=("Arial", 20), text_color="red", fg_color="transparent")
         root.error_contrasena.place(relx=0.5, rely=0.92, anchor="center")
     else:
-        root.error_usuario = ctk.CTkLabel(
-            root,
-            text="Usuario incorrecto",
-            font=("Arial", 20),
-            text_color="red",
-            fg_color="transparent",
-        )
+        root.error_usuario = ctk.CTkLabel(root, text="Usuario incorrecto", font=("Arial", 20), text_color="red", fg_color="transparent")
         root.error_usuario.place(relx=0.5, rely=0.92, anchor="center")
 
 
@@ -399,23 +302,13 @@ def abrir_registro_cuenta(root):
     ventana.geometry("800x600")
     ventana.transient(root)
 
-    etiqueta_usuario = ctk.CTkLabel(
-        ventana,
-        text="Ingrese su nuevo usuario",
-        font=("Arial", 30),
-        text_color=COLOR_TEXTO,
-    )
+    etiqueta_usuario = ctk.CTkLabel(ventana, text="Ingrese su nuevo usuario", font=("Arial", 30), text_color=COLOR_TEXTO)
     etiqueta_usuario.place(relx=0.5, rely=0.20, anchor="center")
 
     entry_usuario = ctk.CTkEntry(ventana, font=("Arial", 20), width=420)
     entry_usuario.place(relx=0.5, rely=0.32, anchor="center")
 
-    etiqueta_contrasena = ctk.CTkLabel(
-        ventana,
-        text="Ingrese su contraseña",
-        font=("Arial", 30),
-        text_color=COLOR_TEXTO,
-    )
+    etiqueta_contrasena = ctk.CTkLabel(ventana, text="Ingrese su contraseña", font=("Arial", 30), text_color=COLOR_TEXTO)
     etiqueta_contrasena.place(relx=0.5, rely=0.47, anchor="center")
 
     entry_contrasena = ctk.CTkEntry(ventana, font=("Arial", 20), width=420, show="*")
@@ -456,15 +349,7 @@ def abrir_registro_cuenta(root):
 
         cerrar()
 
-    boton_terminar = ctk.CTkButton(
-        ventana,
-        text="Terminar usuario",
-        font=("Arial", 24),
-        fg_color="green",
-        width=420,
-        height=50,
-        command=guardar_y_cerrar,
-    )
+    boton_terminar = ctk.CTkButton(ventana, text="Terminar usuario", font=("Arial", 24), fg_color="green", width=420, height=50, command=guardar_y_cerrar)
     boton_terminar.place(relx=0.5, rely=0.80, anchor="center")
 
     ventana.protocol("WM_DELETE_WINDOW", cerrar)
@@ -488,65 +373,19 @@ def abrir_menu_principal(root, usuario):
     principal.minsize(1000, 650)
     crear_fondo(principal)
 
-    ctk.CTkLabel(
-        principal,
-        text="Menú principal",
-        font=("Arial", 44),
-        bg_color=COLOR_FONDO,
-        text_color=COLOR_TEXTO,
-    ).place(relx=0.5, rely=0.12, anchor="center")
+    ctk.CTkLabel(principal, text="Menú principal", font=("Arial", 44), bg_color=COLOR_FONDO, text_color=COLOR_TEXTO).place(relx=0.5, rely=0.12, anchor="center")
+    ctk.CTkLabel(principal, text=f"Usuario: {usuario}", font=("Arial", 18), bg_color=COLOR_FONDO, text_color=COLOR_TEXTO).place(relx=0.88, rely=0.06, anchor="center")
 
-    ctk.CTkLabel(
-        principal,
-        text=f"Usuario: {usuario}",
-        font=("Arial", 18),
-        bg_color=COLOR_FONDO,
-        text_color=COLOR_TEXTO,
-    ).place(relx=0.88, rely=0.06, anchor="center")
-
-    boton_consulta = ctk.CTkButton(
-        principal,
-        text="Consulta animales",
-        font=("Arial", 24),
-        bg_color=COLOR_FONDO,
-        width=420,
-        height=50,
-        command=lambda: abrir_catalogo(principal),
-    )
+    boton_consulta = ctk.CTkButton(principal, text="Consulta animales", font=("Arial", 24), bg_color=COLOR_FONDO, width=420, height=50, command=lambda: abrir_catalogo(principal))
     boton_consulta.place(relx=0.22, rely=0.30, anchor="center")
 
-    boton_factura = ctk.CTkButton(
-        principal,
-        text="Generar factura",
-        font=("Arial", 24),
-        bg_color=COLOR_FONDO,
-        width=420,
-        height=50,
-        command=lambda: abrir_facturacion(principal),
-    )
+    boton_factura = ctk.CTkButton(principal, text="Generar factura", font=("Arial", 24), bg_color=COLOR_FONDO, width=420, height=50, command=lambda: abrir_facturacion(principal))
     boton_factura.place(relx=0.22, rely=0.44, anchor="center")
 
-    boton_registrar = ctk.CTkButton(
-        principal,
-        text="Registrar animal",
-        font=("Arial", 24),
-        bg_color=COLOR_FONDO,
-        width=420,
-        height=50,
-        command=lambda: abrir_formulario_animal(principal),
-    )
+    boton_registrar = ctk.CTkButton(principal, text="Registrar animal", font=("Arial", 24), bg_color=COLOR_FONDO, width=420, height=50, command=lambda: abrir_formulario_animal(principal))
     boton_registrar.place(relx=0.22, rely=0.58, anchor="center")
 
-    boton_salir = ctk.CTkButton(
-        principal,
-        text="Cerrar sesión",
-        font=("Arial", 18),
-        fg_color="#c94f4f",
-        hover_color="#a83f3f",
-        width=200,
-        height=40,
-        command=lambda: cerrar_sesion(root, principal),
-    )
+    boton_salir = ctk.CTkButton(principal, text="Cerrar sesión", font=("Arial", 18), fg_color="#c94f4f", hover_color="#a83f3f", width=200, height=40, command=lambda: cerrar_sesion(root, principal))
     boton_salir.place(relx=0.88, rely=0.90, anchor="center")
 
     principal.protocol("WM_DELETE_WINDOW", lambda: cerrar_sesion(root, principal))
@@ -588,143 +427,50 @@ def abrir_formulario_animal(principal):
     panel = ctk.CTkFrame(formulario, fg_color=COLOR_PANEL, corner_radius=18)
     panel.place(relx=0.5, rely=0.5, anchor="center", relwidth=0.96, relheight=0.95)
 
-    ctk.CTkLabel(
-        panel,
-        text="Registrar animal",
-        font=("Arial", 34),
-        text_color=COLOR_TEXTO,
-    ).pack(pady=(16, 2))
+    ctk.CTkLabel(panel, text="Registrar animal", font=("Arial", 34), text_color=COLOR_TEXTO).pack(pady=(16, 2))
+    ctk.CTkLabel(panel, text="Completa la hoja técnica básica del bovino.", font=("Arial", 16), text_color="#444444").pack(pady=(0, 8))
 
-    ctk.CTkLabel(
-        panel,
-        text="Completa la hoja técnica básica del bovino.",
-        font=("Arial", 16),
-        text_color="#444444",
-    ).pack(pady=(0, 8))
-
-    marco_formulario = ctk.CTkScrollableFrame(
-        panel,
-        fg_color=COLOR_PANEL,
-        corner_radius=0,
-    )
+    marco_formulario = ctk.CTkScrollableFrame(panel, fg_color=COLOR_PANEL, corner_radius=0)
     marco_formulario.pack(fill="both", expand=True, padx=18, pady=(0, 8))
     marco_formulario.grid_columnconfigure(0, weight=1)
     marco_formulario.grid_columnconfigure(1, weight=1)
 
-    def agregar_campo(
-        fila,
-        columna,
-        etiqueta,
-        tipo="entry",
-        valores=None,
-        placeholder="",
-        columnspan=1,
-    ):
+    def agregar_campo(fila, columna, etiqueta, tipo="entry", valores=None, placeholder="", columnspan=1):
         marco = ctk.CTkFrame(marco_formulario, fg_color="transparent")
-        marco.grid(
-            row=fila,
-            column=columna,
-            columnspan=columnspan,
-            padx=10,
-            pady=6,
-            sticky="ew",
-        )
-        ctk.CTkLabel(
-            marco,
-            text=etiqueta,
-            font=("Arial", 15),
-            text_color=COLOR_TEXTO,
-            anchor="w",
-        ).pack(fill="x")
+        marco.grid(row=fila, column=columna, columnspan=columnspan, padx=10, pady=6, sticky="ew")
+        ctk.CTkLabel(marco, text=etiqueta, font=("Arial", 15), text_color=COLOR_TEXTO, anchor="w").pack(fill="x")
 
         if tipo in ("combo", "combo_editable"):
-            widget = ctk.CTkComboBox(
-                marco,
-                values=valores or [],
-                font=("Arial", 15),
-                height=36,
-                state="readonly" if tipo == "combo" else "normal",
-            )
+            widget = ctk.CTkComboBox(marco, values=valores or [], font=("Arial", 15), height=36, state="readonly" if tipo == "combo" else "normal")
             if valores:
                 widget.set(valores[0])
         elif tipo == "texto":
-            widget = ctk.CTkTextbox(
-                marco,
-                height=90,
-                font=("Arial", 15),
-                wrap="word",
-            )
+            widget = ctk.CTkTextbox(marco, height=90, font=("Arial", 15), wrap="word")
         else:
-            widget = ctk.CTkEntry(
-                marco,
-                font=("Arial", 15),
-                height=36,
-                placeholder_text=placeholder,
-            )
+            widget = ctk.CTkEntry(marco, font=("Arial", 15), height=36, placeholder_text=placeholder)
 
         widget.pack(fill="x")
         return widget
 
-    entry_identificacion = agregar_campo(
-        0, 0, "Identificación / arete *", placeholder="Ej: AR-001"
-    )
-    entry_nombre = agregar_campo(
-        0, 1, "Nombre *", placeholder="Ej: Luna"
-    )
-    combo_raza = agregar_campo(
-        1, 0, "Raza *", tipo="combo_editable", valores=RAZAS
-    )
-    combo_sexo = agregar_campo(
-        1, 1, "Sexo *", tipo="combo", valores=SEXOS
-    )
-    entry_fecha_nacimiento = agregar_campo(
-        2,
-        0,
-        "Fecha de nacimiento * (AAAA-MM-DD)",
-        placeholder="Ej: 2022-03-15",
-    )
-    entry_peso = agregar_campo(
-        2, 1, "Peso (kg) *", placeholder="Ej: 450"
-    )
-    entry_color = agregar_campo(
-        3, 0, "Color", placeholder="Ej: Blanco y negro"
-    )
-    combo_proposito = agregar_campo(
-        3, 1, "Propósito *", tipo="combo", valores=PROPOSITOS
-    )
-    combo_origen = agregar_campo(
-        4, 0, "Origen *", tipo="combo", valores=ORIGENES
-    )
-    entry_procedencia = agregar_campo(
-        4,
-        1,
-        "Procedencia",
-        placeholder="Granja o lugar de donde vino",
-    )
-    entry_fecha_ingreso = agregar_campo(
-        5,
-        0,
-        "Fecha de ingreso (AAAA-MM-DD)",
-        placeholder="Hoy",
-    )
-    combo_estado = agregar_campo(
-        5, 1, "Estado *", tipo="combo", valores=ESTADOS
-    )
-    texto_observaciones = agregar_campo(
-        6, 0, "Observaciones", tipo="texto", columnspan=2
-    )
+    entry_identificacion = agregar_campo(0, 0, "Identificación / arete *", placeholder="Ej: AR-001")
+    entry_nombre = agregar_campo(0, 1, "Nombre *", placeholder="Ej: Luna")
+    combo_raza = agregar_campo(1, 0, "Raza *", tipo="combo_editable", valores=RAZAS)
+    combo_sexo = agregar_campo(1, 1, "Sexo *", tipo="combo", valores=SEXOS)
+    entry_fecha_nacimiento = agregar_campo(2, 0, "Fecha de nacimiento * (AAAA-MM-DD)", placeholder="Ej: 2022-03-15")
+    entry_peso = agregar_campo(2, 1, "Peso (kg) *", placeholder="Ej: 450")
+    entry_color = agregar_campo(3, 0, "Color", placeholder="Ej: Blanco y negro")
+    combo_proposito = agregar_campo(3, 1, "Propósito *", tipo="combo", valores=PROPOSITOS)
+    combo_origen = agregar_campo(4, 0, "Origen *", tipo="combo", valores=ORIGENES)
+    entry_procedencia = agregar_campo(4, 1, "Procedencia", placeholder="Granja o lugar de donde vino")
+    entry_fecha_ingreso = agregar_campo(5, 0, "Fecha de ingreso (AAAA-MM-DD)", placeholder="Hoy")
+    combo_estado = agregar_campo(5, 1, "Estado *", tipo="combo", valores=ESTADOS)
+    texto_observaciones = agregar_campo(6, 0, "Observaciones", tipo="texto", columnspan=2)
 
     combo_proposito.set("Doble propósito")
     combo_raza.set("Mestizo")
     entry_fecha_ingreso.insert(0, date.today().isoformat())
 
-    mensaje = ctk.CTkLabel(
-        panel,
-        text="",
-        font=("Arial", 15),
-        text_color="red",
-        wraplength=860,
-    )
+    mensaje = ctk.CTkLabel(panel, text="", font=("Arial", 15), text_color="red", wraplength=860)
     mensaje.pack(pady=(2, 0))
 
     marco_botones = ctk.CTkFrame(panel, fg_color="transparent")
@@ -793,22 +539,16 @@ def abrir_formulario_animal(principal):
 
         nacimiento = validar_fecha(fecha_nacimiento_texto)
         if nacimiento is None:
-            return mostrar_error(
-                "La fecha de nacimiento debe tener el formato AAAA-MM-DD."
-            )
+            return mostrar_error("La fecha de nacimiento debe tener el formato AAAA-MM-DD.")
         if nacimiento > date.today():
             return mostrar_error("La fecha de nacimiento no puede ser futura.")
 
         fecha_ingreso_texto = fecha_ingreso_texto or date.today().isoformat()
         ingreso = validar_fecha(fecha_ingreso_texto)
         if ingreso is None:
-            return mostrar_error(
-                "La fecha de ingreso debe tener el formato AAAA-MM-DD."
-            )
+            return mostrar_error("La fecha de ingreso debe tener el formato AAAA-MM-DD.")
         if ingreso < nacimiento:
-            return mostrar_error(
-                "La fecha de ingreso no puede ser anterior a la de nacimiento."
-            )
+            return mostrar_error("La fecha de ingreso no puede ser anterior a la de nacimiento.")
 
         try:
             peso = float(peso_texto)
@@ -818,27 +558,16 @@ def abrir_formulario_animal(principal):
             return mostrar_error("El peso debe ser mayor que cero.")
 
         if origen != "Criado en la granja" and not procedencia:
-            return mostrar_error(
-                "Indica la procedencia del animal (granja o lugar de origen)."
-            )
+            return mostrar_error("Indica la procedencia del animal (granja o lugar de origen).")
         if origen == "Criado en la granja" and not procedencia:
             procedencia = "Granja propia"
 
         animales = cargar_animales()
         for animal in animales:
-            if (
-                str(animal.get("identificacion", "")).strip().lower()
-                == identificacion.lower()
-            ):
-                return mostrar_error(
-                    "Ya existe un animal con esa identificación o arete."
-                )
+            if str(animal.get("identificacion", "")).strip().lower() == identificacion.lower():
+                return mostrar_error("Ya existe un animal con esa identificación o arete.")
 
-        ids = [
-            animal.get("id")
-            for animal in animales
-            if isinstance(animal.get("id"), int)
-        ]
+        ids = [animal.get("id") for animal in animales if isinstance(animal.get("id"), int)]
         nuevo_id = max(ids, default=0) + 1
 
         nuevo_animal = {
@@ -873,10 +602,7 @@ def abrir_formulario_animal(principal):
                 pass
 
         limpiar()
-        mensaje.configure(
-            text=f"Animal '{nombre}' registrado correctamente.",
-            text_color="green",
-        )
+        mensaje.configure(text=f"Animal '{nombre}' registrado correctamente.", text_color="green")
 
     def volver():
         try:
@@ -885,37 +611,14 @@ def abrir_formulario_animal(principal):
             pass
         principal.ventana_registro_animal = None
 
-    ctk.CTkButton(
-        marco_botones,
-        text="Guardar animal",
-        font=("Arial", 18),
-        fg_color="green",
-        width=200,
-        height=44,
-        command=guardar,
-    ).pack(side="left", padx=8)
+    boton_guardar = ctk.CTkButton(marco_botones, text="Guardar animal", font=("Arial", 18), fg_color="green", width=200, height=44, command=guardar)
+    boton_guardar.pack(side="left", padx=8)
 
-    ctk.CTkButton(
-        marco_botones,
-        text="Limpiar",
-        font=("Arial", 18),
-        fg_color=COLOR_BOTON,
-        text_color=COLOR_TEXTO,
-        width=150,
-        height=44,
-        command=limpiar,
-    ).pack(side="left", padx=8)
+    boton_limpiar = ctk.CTkButton(marco_botones, text="Limpiar", font=("Arial", 18), fg_color=COLOR_BOTON, text_color=COLOR_TEXTO, width=150, height=44, command=limpiar)
+    boton_limpiar.pack(side="left", padx=8)
 
-    ctk.CTkButton(
-        marco_botones,
-        text="Volver",
-        font=("Arial", 18),
-        fg_color=COLOR_BOTON,
-        text_color=COLOR_TEXTO,
-        width=150,
-        height=44,
-        command=volver,
-    ).pack(side="left", padx=8)
+    boton_volver = ctk.CTkButton(marco_botones, text="Volver", font=("Arial", 18), fg_color=COLOR_BOTON, text_color=COLOR_TEXTO, width=150, height=44, command=volver)
+    boton_volver.pack(side="left", padx=8)
 
     formulario.protocol("WM_DELETE_WINDOW", volver)
     principal.ventana_registro_animal = formulario
@@ -964,69 +667,30 @@ def abrir_catalogo(principal):
     panel.grid_rowconfigure(1, weight=1)
 
     encabezado = ctk.CTkFrame(panel, fg_color="transparent")
-    encabezado.grid(
-        row=0, column=0, columnspan=2, sticky="ew", padx=18, pady=(12, 6)
-    )
+    encabezado.grid(row=0, column=0, columnspan=2, sticky="ew", padx=18, pady=(12, 6))
 
-    ctk.CTkLabel(
-        encabezado,
-        text="Consulta de animales",
-        font=("Arial", 32),
-        text_color=COLOR_TEXTO,
-    ).pack(side="left")
+    ctk.CTkLabel(encabezado, text="Consulta de animales", font=("Arial", 32), text_color=COLOR_TEXTO).pack(side="left")
 
-    contador = ctk.CTkLabel(
-        encabezado,
-        text="",
-        font=("Arial", 16),
-        text_color="#333333",
-    )
+    contador = ctk.CTkLabel(encabezado, text="", font=("Arial", 16), text_color="#333333")
     contador.pack(side="right")
 
     # ---------------- Panel de filtros ----------------
-    izquierdo = ctk.CTkFrame(
-        panel, fg_color=COLOR_PANEL_FILTROS, corner_radius=12
-    )
-    izquierdo.grid(
-        row=1, column=0, sticky="nsew", padx=(18, 8), pady=(0, 18)
-    )
+    izquierdo = ctk.CTkFrame(panel, fg_color=COLOR_PANEL_FILTROS, corner_radius=12)
+    izquierdo.grid(row=1, column=0, sticky="nsew", padx=(18, 8), pady=(0, 18))
 
-    ctk.CTkLabel(
-        izquierdo,
-        text="Buscar por nombre o identificación",
-        font=("Arial", 15),
-        text_color=COLOR_TEXTO,
-        anchor="w",
-    ).pack(fill="x", padx=12, pady=(12, 4))
+    ctk.CTkLabel(izquierdo, text="Buscar por nombre o identificación", font=("Arial", 15), text_color=COLOR_TEXTO, anchor="w").pack(fill="x", padx=12, pady=(12, 4))
 
     marco_busqueda = ctk.CTkFrame(izquierdo, fg_color="transparent")
     marco_busqueda.pack(fill="x", padx=10)
 
-    entry_busqueda = ctk.CTkEntry(
-        marco_busqueda,
-        font=("Arial", 14),
-        placeholder_text="Ej: Luna o AR-001",
-    )
+    entry_busqueda = ctk.CTkEntry(marco_busqueda, font=("Arial", 14), placeholder_text="Ej: Luna o AR-001")
     entry_busqueda.pack(side="left", fill="x", expand=True, padx=(0, 6))
 
-    ctk.CTkButton(
-        marco_busqueda,
-        text="Buscar",
-        font=("Arial", 14),
-        width=80,
-        height=32,
-        command=lambda: actualizar_lista(),
-    ).pack(side="left")
+    ctk.CTkButton(marco_busqueda, text="Buscar", font=("Arial", 14), width=80, height=32, command=lambda: actualizar_lista()).pack(side="left")
 
     entry_busqueda.bind("<Return>", lambda event: actualizar_lista())
 
-    ctk.CTkLabel(
-        izquierdo,
-        text="Filtrar por categoría",
-        font=("Arial", 15),
-        text_color=COLOR_TEXTO,
-        anchor="w",
-    ).pack(fill="x", padx=12, pady=(14, 4))
+    ctk.CTkLabel(izquierdo, text="Filtrar por categoría", font=("Arial", 15), text_color=COLOR_TEXTO, anchor="w").pack(fill="x", padx=12, pady=(14, 4))
 
     marco_categorias = ctk.CTkFrame(izquierdo, fg_color="transparent")
     marco_categorias.pack(fill="x", padx=8)
@@ -1035,87 +699,28 @@ def abrir_catalogo(principal):
 
     botones_categoria = {}
     for indice, (clave, titulo) in enumerate(CAMPOS_FILTRO):
-        boton = ctk.CTkButton(
-            marco_categorias,
-            text=titulo,
-            font=("Arial", 14),
-            height=32,
-            fg_color=COLOR_BOTON,
-            text_color=COLOR_TEXTO,
-            command=lambda c=clave: seleccionar_categoria(c),
-        )
-        boton.grid(
-            row=indice // 2,
-            column=indice % 2,
-            padx=3,
-            pady=3,
-            sticky="ew",
-        )
+        boton = ctk.CTkButton(marco_categorias, text=titulo, font=("Arial", 14), height=32, fg_color=COLOR_BOTON, text_color=COLOR_TEXTO, command=lambda c=clave: seleccionar_categoria(c))
+        boton.grid(row=indice // 2, column=indice % 2, padx=3, pady=3, sticky="ew")
         botones_categoria[clave] = boton
 
-    ctk.CTkLabel(
-        izquierdo,
-        text="Valores de la categoría",
-        font=("Arial", 15),
-        text_color=COLOR_TEXTO,
-        anchor="w",
-    ).pack(fill="x", padx=12, pady=(14, 4))
+    ctk.CTkLabel(izquierdo, text="Valores de la categoría", font=("Arial", 15), text_color=COLOR_TEXTO, anchor="w").pack(fill="x", padx=12, pady=(14, 4))
 
-    panel_valores = ctk.CTkScrollableFrame(
-        izquierdo,
-        height=230,
-        fg_color="#cfe8f3",
-    )
+    panel_valores = ctk.CTkScrollableFrame(izquierdo, height=230, fg_color="#cfe8f3")
     panel_valores.pack(fill="both", expand=True, padx=8, pady=(0, 8))
 
-    filtro_activo = ctk.CTkLabel(
-        izquierdo,
-        text="Sin filtros activos",
-        font=("Arial", 13),
-        text_color="#333333",
-        wraplength=290,
-        justify="left",
-    )
+    filtro_activo = ctk.CTkLabel(izquierdo, text="Sin filtros activos", font=("Arial", 13), text_color="#333333", wraplength=290, justify="left")
     filtro_activo.pack(fill="x", padx=12, pady=(0, 6))
 
     marco_acciones = ctk.CTkFrame(izquierdo, fg_color="transparent")
     marco_acciones.pack(fill="x", padx=8, pady=(0, 12))
 
-    ctk.CTkButton(
-        marco_acciones,
-        text="Limpiar filtros",
-        font=("Arial", 14),
-        fg_color=COLOR_BOTON,
-        text_color=COLOR_TEXTO,
-        height=32,
-        command=lambda: limpiar_filtros(),
-    ).pack(fill="x", pady=2)
-
-    ctk.CTkButton(
-        marco_acciones,
-        text="Actualizar",
-        font=("Arial", 14),
-        fg_color=COLOR_BOTON,
-        text_color=COLOR_TEXTO,
-        height=32,
-        command=lambda: recargar(),
-    ).pack(fill="x", pady=2)
-
-    ctk.CTkButton(
-        marco_acciones,
-        text="Volver",
-        font=("Arial", 14),
-        fg_color=COLOR_BOTON,
-        text_color=COLOR_TEXTO,
-        height=32,
-        command=lambda: cerrar_catalogo(),
-    ).pack(fill="x", pady=2)
+    ctk.CTkButton(marco_acciones, text="Limpiar filtros", font=("Arial", 14), fg_color=COLOR_BOTON, text_color=COLOR_TEXTO, height=32, command=lambda: limpiar_filtros()).pack(fill="x", pady=2)
+    ctk.CTkButton(marco_acciones, text="Actualizar", font=("Arial", 14), fg_color=COLOR_BOTON, text_color=COLOR_TEXTO, height=32, command=lambda: recargar()).pack(fill="x", pady=2)
+    ctk.CTkButton(marco_acciones, text="Volver", font=("Arial", 14), fg_color=COLOR_BOTON, text_color=COLOR_TEXTO, height=32, command=lambda: cerrar_catalogo()).pack(fill="x", pady=2)
 
     # ---------------- Panel de resultados ----------------
     derecho = ctk.CTkFrame(panel, fg_color="transparent")
-    derecho.grid(
-        row=1, column=1, sticky="nsew", padx=(8, 18), pady=(0, 18)
-    )
+    derecho.grid(row=1, column=1, sticky="nsew", padx=(8, 18), pady=(0, 18))
     derecho.grid_rowconfigure(0, weight=1)
     derecho.grid_columnconfigure(0, weight=1)
 
@@ -1129,39 +734,12 @@ def abrir_catalogo(principal):
         estilo.theme_use("clam")
     except Exception:
         pass
-    estilo.configure(
-        "Animales.Treeview",
-        background="white",
-        foreground="black",
-        fieldbackground="white",
-        rowheight=28,
-        font=("Arial", 12),
-    )
-    estilo.configure(
-        "Animales.Treeview.Heading",
-        font=("Arial", 12, "bold"),
-        background=COLOR_FONDO,
-        foreground="black",
-    )
+    estilo.configure("Animales.Treeview", background="white", foreground="black", fieldbackground="white", rowheight=28, font=("Arial", 12))
+    estilo.configure("Animales.Treeview.Heading", font=("Arial", 12, "bold"), background=COLOR_FONDO, foreground="black")
 
-    columnas = [
-        ("id", "ID", 45),
-        ("identificacion", "Identificación", 120),
-        ("nombre", "Nombre", 120),
-        ("raza", "Raza", 105),
-        ("sexo", "Sexo", 70),
-        ("edad", "Edad", 110),
-        ("peso", "Peso (kg)", 80),
-        ("origen", "Origen", 140),
-        ("estado", "Estado", 80),
-    ]
+    columnas = [("id", "ID", 45), ("identificacion", "Identificación", 120), ("nombre", "Nombre", 120), ("raza", "Raza", 105), ("sexo", "Sexo", 70), ("edad", "Edad", 110), ("peso", "Peso (kg)", 80), ("origen", "Origen", 140), ("estado", "Estado", 80)]
 
-    tabla = ttk.Treeview(
-        marco_tabla,
-        columns=[columna[0] for columna in columnas],
-        show="headings",
-        style="Animales.Treeview",
-    )
+    tabla = ttk.Treeview(marco_tabla, columns=[columna[0] for columna in columnas], show="headings", style="Animales.Treeview")
     for clave, titulo, ancho in columnas:
         tabla.heading(clave, text=titulo)
         tabla.column(clave, width=ancho, anchor="w", stretch=True)
@@ -1171,12 +749,7 @@ def abrir_catalogo(principal):
     tabla.grid(row=0, column=0, sticky="nsew")
     barra.grid(row=0, column=1, sticky="ns")
 
-    detalle = ctk.CTkTextbox(
-        derecho,
-        height=190,
-        font=("Arial", 14),
-        wrap="word",
-    )
+    detalle = ctk.CTkTextbox(derecho, height=190, font=("Arial", 14), wrap="word")
     detalle.grid(row=1, column=0, sticky="ew", pady=(8, 0))
     detalle.configure(state="disabled")
 
@@ -1198,47 +771,24 @@ def abrir_catalogo(principal):
         for clave, titulo in CAMPOS_FILTRO:
             if filtros[clave]:
                 partes.append(f"{titulo}: {filtros[clave]}")
-        filtro_activo.configure(
-            text="\n".join(partes) if partes else "Sin filtros activos"
-        )
+        filtro_activo.configure(text="\n".join(partes) if partes else "Sin filtros activos")
 
     def actualizar_lista():
         nonlocal animales_filtrados
         todos = cargar_animales()
-        animales_filtrados = filtrar_animales(
-            todos, filtros, entry_busqueda.get()
-        )
+        animales_filtrados = filtrar_animales(todos, filtros, entry_busqueda.get())
 
         filas = tabla.get_children()
         if filas:
             tabla.delete(*filas)
         for indice, animal in enumerate(animales_filtrados):
-            tabla.insert(
-                "",
-                "end",
-                iid=str(indice),
-                values=(
-                    animal.get("id", ""),
-                    animal.get("identificacion", ""),
-                    animal.get("nombre", ""),
-                    animal.get("raza", ""),
-                    animal.get("sexo", ""),
-                    calcular_edad(animal.get("fecha_nacimiento")),
-                    formatear_peso(animal.get("peso")),
-                    animal.get("origen", ""),
-                    animal.get("estado", ""),
-                ),
-            )
+            tabla.insert("", "end", iid=str(indice), values=(animal.get("id", ""), animal.get("identificacion", ""), animal.get("nombre", ""), animal.get("raza", ""), animal.get("sexo", ""), calcular_edad(animal.get("fecha_nacimiento")), formatear_peso(animal.get("peso")), animal.get("origen", ""), animal.get("estado", "")))
 
-        contador.configure(
-            text=f"{len(animales_filtrados)} de {len(todos)} animales"
-        )
+        contador.configure(text=f"{len(animales_filtrados)} de {len(todos)} animales")
         actualizar_filtro_activo()
 
         if animales_filtrados:
-            poner_detalle(
-                "Selecciona un animal de la lista para ver su hoja técnica."
-            )
+            poner_detalle("Selecciona un animal de la lista para ver su hoja técnica.")
         else:
             poner_detalle("No hay animales que coincidan con los filtros.")
 
@@ -1264,43 +814,20 @@ def abrir_catalogo(principal):
         categoria_actual = categoria
 
         for clave, boton in botones_categoria.items():
-            boton.configure(
-                fg_color=COLOR_BOTON_ACTIVO if clave == categoria else COLOR_BOTON
-            )
+            boton.configure(fg_color=COLOR_BOTON_ACTIVO if clave == categoria else COLOR_BOTON)
 
         for hijo in panel_valores.winfo_children():
             hijo.destroy()
 
         valores = valores_categoria(cargar_animales(), categoria)
 
-        ctk.CTkButton(
-            panel_valores,
-            text="Todos",
-            font=("Arial", 14),
-            height=30,
-            fg_color="#9ecfe3",
-            text_color=COLOR_TEXTO,
-            command=lambda: aplicar_valor(None),
-        ).pack(fill="x", padx=4, pady=2)
+        ctk.CTkButton(panel_valores, text="Todos", font=("Arial", 14), height=30, fg_color="#9ecfe3", text_color=COLOR_TEXTO, command=lambda: aplicar_valor(None)).pack(fill="x", padx=4, pady=2)
 
         if valores:
             for valor in valores:
-                ctk.CTkButton(
-                    panel_valores,
-                    text=valor,
-                    font=("Arial", 14),
-                    height=30,
-                    fg_color=COLOR_BOTON,
-                    text_color=COLOR_TEXTO,
-                    command=lambda v=valor: aplicar_valor(v),
-                ).pack(fill="x", padx=4, pady=2)
+                ctk.CTkButton(panel_valores, text=valor, font=("Arial", 14), height=30, fg_color=COLOR_BOTON, text_color=COLOR_TEXTO, command=lambda v=valor: aplicar_valor(v)).pack(fill="x", padx=4, pady=2)
         else:
-            ctk.CTkLabel(
-                panel_valores,
-                text="Sin valores registrados",
-                font=("Arial", 13),
-                text_color="#555555",
-            ).pack(pady=10)
+            ctk.CTkLabel(panel_valores, text="Sin valores registrados", font=("Arial", 13), text_color="#555555").pack(pady=10)
 
     def limpiar_filtros():
         nonlocal categoria_actual
@@ -1366,49 +893,21 @@ def abrir_facturacion(principal):
     factura.transient(principal)
     crear_fondo(factura)
 
-    entry_granja = ctk.CTkEntry(
-        factura,
-        font=("Arial", 20),
-        width=420,
-        height=50,
-        placeholder_text="Granja",
-    )
+    entry_granja = ctk.CTkEntry(factura, font=("Arial", 20), width=420, height=50, placeholder_text="Granja")
     entry_granja.place(relx=0.2, rely=0.25, anchor="center")
 
-    entry_vacas = ctk.CTkEntry(
-        factura,
-        font=("Arial", 20),
-        width=420,
-        height=50,
-        placeholder_text="Número de vacas",
-    )
+    entry_vacas = ctk.CTkEntry(factura, font=("Arial", 20), width=420, height=50, placeholder_text="Número de vacas")
     entry_vacas.place(relx=0.2, rely=0.37, anchor="center")
 
-    entry_precio = ctk.CTkEntry(
-        factura,
-        font=("Arial", 20),
-        width=420,
-        height=50,
-        placeholder_text="Precio por libra",
-    )
+    entry_precio = ctk.CTkEntry(factura, font=("Arial", 20), width=420, height=50, placeholder_text="Precio por libra")
     entry_precio.place(relx=0.2, rely=0.49, anchor="center")
 
-    caja_factura = ctk.CTkTextbox(
-        factura,
-        width=620,
-        height=450,
-        font=("Arial", 18),
-        wrap="none",
-    )
+    caja_factura = ctk.CTkTextbox(factura, width=620, height=450, font=("Arial", 18), wrap="none")
     caja_factura.place(relx=0.67, rely=0.5, anchor="center")
-    caja_factura.insert(
-        "1.0", "Aquí aparecerá la factura cuando pulses Generar."
-    )
+    caja_factura.insert("1.0", "Aquí aparecerá la factura cuando pulses Generar.")
     caja_factura.configure(state="disabled")
 
-    mensaje = ctk.CTkLabel(
-        factura, text="", font=("Arial", 15), text_color="red"
-    )
+    mensaje = ctk.CTkLabel(factura, text="", font=("Arial", 15), text_color="red")
     mensaje.place(relx=0.2, rely=0.61, anchor="center")
 
     def mostrar(texto):
@@ -1423,24 +922,18 @@ def abrir_facturacion(principal):
         precio = entry_precio.get().strip().replace(",", ".")
 
         if not granja or not vacas or not precio:
-            mensaje.configure(
-                text="Llena los tres campos: granja, vacas y precio por libra."
-            )
+            mensaje.configure(text="Llena los tres campos: granja, vacas y precio por libra.")
             return
 
         try:
             vacas = int(vacas)
             precio = float(precio)
         except ValueError:
-            mensaje.configure(
-                text="Las vacas deben ser un entero y el precio un número."
-            )
+            mensaje.configure(text="Las vacas deben ser un entero y el precio un número.")
             return
 
         if vacas <= 0 or precio <= 0:
-            mensaje.configure(
-                text="Las vacas y el precio deben ser mayores que cero."
-            )
+            mensaje.configure(text="Las vacas y el precio deben ser mayores que cero.")
             return
 
         try:
@@ -1455,25 +948,12 @@ def abrir_facturacion(principal):
         datos["VACAS"] = vacas
         datos["Precio_por_libra"] = precio
 
-        inicio = (
-            "# ==========================================\n"
-            "#   Facturacion Electronica De Venta\n"
-            "#   Generado por MiniGan.INC\n"
-            "#   Correo: MiniGan@outlook.com\n"
-            "#   PQR: 3**********\n"
-            "# ==========================================\n"
-        )
+        inicio = "# ==========================================\n#   Facturacion Electronica De Venta\n#   Generado por MiniGan.INC\n#   Correo: MiniGan@outlook.com\n#   PQR: 3**********\n# ==========================================\n"
 
         try:
             with open(RUTA_FACTURA, "w", encoding="utf-8") as archivo:
                 archivo.write(inicio)
-                yaml.dump(
-                    datos,
-                    archivo,
-                    allow_unicode=True,
-                    default_flow_style=False,
-                    sort_keys=False,
-                )
+                yaml.dump(datos, archivo, allow_unicode=True, default_flow_style=False, sort_keys=False)
         except OSError as error:
             mensaje.configure(text=f"No se pudo guardar la factura: {error}")
             return
@@ -1490,27 +970,11 @@ def abrir_facturacion(principal):
             pass
         principal.ventana_factura = None
 
-    ctk.CTkButton(
-        factura,
-        text="Generar",
-        font=("Arial", 20),
-        fg_color=COLOR_BOTON,
-        text_color=COLOR_TEXTO,
-        width=180,
-        height=44,
-        command=archivos,
-    ).place(relx=0.2, rely=0.72, anchor="center")
+    boton_generar = ctk.CTkButton(factura, text="Generar", font=("Arial", 20), fg_color=COLOR_BOTON, text_color=COLOR_TEXTO, width=180, height=44, command=archivos)
+    boton_generar.place(relx=0.2, rely=0.72, anchor="center")
 
-    ctk.CTkButton(
-        factura,
-        text="Volver",
-        font=("Arial", 18),
-        fg_color=COLOR_BOTON,
-        text_color=COLOR_TEXTO,
-        width=140,
-        height=40,
-        command=cerrar,
-    ).place(relx=0.88, rely=0.90, anchor="center")
+    boton_volver = ctk.CTkButton(factura, text="Volver", font=("Arial", 18), fg_color=COLOR_BOTON, text_color=COLOR_TEXTO, width=140, height=40, command=cerrar)
+    boton_volver.place(relx=0.88, rely=0.90, anchor="center")
 
     factura.protocol("WM_DELETE_WINDOW", cerrar)
     principal.ventana_factura = factura
