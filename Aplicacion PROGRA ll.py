@@ -2,10 +2,11 @@ from datetime import date, datetime
 from pathlib import Path
 import json
 import os
+import tkinter as tk
 
 import customtkinter as ctk
 import yaml
-from PIL import Image, ImageOps
+from PIL import Image, ImageOps, ImageTk
 from tkinter import ttk
 
 ctk.set_appearance_mode("light")
@@ -60,6 +61,10 @@ def boton(padre, texto, comando, tipo="primario", ancho=170, alto=44, tam=14, **
 
 def tarjeta(padre, **kw):
     return ctk.CTkFrame(padre, fg_color=COLOR_TARJETA, corner_radius=22, border_width=1, border_color=COLOR_BORDE, **kw)
+
+def fijar_ancho(tarjeta, ancho):
+    """Evita que la tarjeta se encoja al ancho de su contenido (altura sigue automatica)."""
+    ctk.CTkFrame(tarjeta, width=ancho, height=1, fg_color="transparent").pack()
 
 def ajustar_ventana(ventana, ancho=1360, alto=840):
     pantalla_ancho = ventana.winfo_screenwidth()
@@ -126,12 +131,13 @@ def poner_fondo(ventana):
     ventana.after(20, ajustar)
     return fondo
 
-def nueva_ventana(padre, titulo, ancho=1360, alto=840):
+def nueva_ventana(padre, titulo, ancho=1360, alto=840, fondo=True):
     ventana = ctk.CTkToplevel(padre)
     ventana.title(titulo)
     ajustar_ventana(ventana, ancho, alto)
     ventana.transient(padre)
-    poner_fondo(ventana)
+    if fondo:
+        poner_fondo(ventana)
     return ventana
 
 def ventana_abierta(padre, atributo):
@@ -285,10 +291,11 @@ def crear_ventana_login():
     ajustar_ventana(root, 1180, 760)
     poner_fondo(root)
 
-    panel = tarjeta(root, width=500)
+    panel = tarjeta(root)
     panel.place(relx=0.5, rely=0.5, anchor="center")
+    fijar_ancho(panel, 540)
 
-    etiqueta(panel, "Métodos Campesinos", 30, COLOR_TEXTO, negrita=True).pack(pady=(52, 4))
+    etiqueta(panel, "Métodos Campesinos", 28, COLOR_TEXTO, negrita=True).pack(pady=(52, 4))
     etiqueta(panel, "Control de ganado", 14, COLOR_SECUNDARIO).pack(pady=(0, 38))
 
     etiqueta(panel, "Usuario", 13, COLOR_SECUNDARIO, anchor="w").pack(fill="x", padx=60)
@@ -341,8 +348,9 @@ def abrir_registro_cuenta(root):
 
     ventana = nueva_ventana(root, "Crear usuario", 1040, 700)
 
-    panel = tarjeta(ventana, width=500)
+    panel = tarjeta(ventana)
     panel.place(relx=0.5, rely=0.5, anchor="center")
+    fijar_ancho(panel, 500)
 
     etiqueta(panel, "Crear usuario", 28, COLOR_TEXTO, negrita=True).pack(pady=(46, 4))
     etiqueta(panel, "Elige un nombre y una contraseña.", 13, COLOR_SECUNDARIO).pack(pady=(0, 34))
@@ -402,32 +410,74 @@ def abrir_menu_principal(root, usuario):
     if ventana_abierta(root, "ventana_principal"):
         return
 
-    principal = nueva_ventana(root, "Menú principal", 1360, 820)
+    principal = nueva_ventana(root, "Menú principal", 1360, 820, fondo=False)
     root.withdraw()
 
-    barra = ctk.CTkFrame(principal, fg_color="transparent")
-    barra.pack(fill="x", padx=48, pady=(30, 0))
+    lienzo = tk.Canvas(principal, highlightthickness=0, bd=0, bg=COLOR_FONDO)
+    lienzo.place(x=0, y=0, relwidth=1, relheight=1)
 
-    etiqueta(barra, "Métodos Campesinos", 22, COLOR_TEXTO, negrita=True).pack(side="left")
-    boton(barra, "Cerrar sesión", lambda: cerrar_sesion(root, principal), "texto", ancho=130, alto=34).pack(side="right")
-    etiqueta(barra, f"Usuario: {usuario}", 13, COLOR_SECUNDARIO).pack(side="right", padx=(0, 22))
+    imagen = cargar_imagen()
+    estado = {"job": None, "tam": (0, 0), "foto": None}
 
-    centro = ctk.CTkFrame(principal, fg_color="transparent")
-    centro.place(relx=0.5, rely=0.52, anchor="center")
+    def cerrar():
+        cerrar_sesion(root, principal)
 
-    etiqueta(centro, "¿Qué deseas hacer?", 26, COLOR_TEXTO, negrita=True).pack()
-    etiqueta(centro, "Selecciona una opción para continuar.", 14, COLOR_SECUNDARIO).pack(pady=(10, 40))
+    boton_cerrar = boton(principal, "Cerrar sesión", cerrar, "suave", ancho=140, alto=36)
 
-    acciones = ctk.CTkFrame(centro, fg_color="transparent")
-    acciones.pack()
+    botones = [
+        boton(principal, "Registrar animal", lambda: abrir_formulario_animal(principal), "primario", ancho=220, alto=108, tam=15),
+        boton(principal, "Consultar animales", lambda: abrir_catalogo(principal), "suave", ancho=220, alto=108, tam=15),
+        boton(principal, "Generar factura", lambda: abrir_facturacion(principal), "suave", ancho=220, alto=108, tam=15),
+    ]
 
-    boton(acciones, "Registrar animal", lambda: abrir_formulario_animal(principal), "suave", ancho=220, alto=108, tam=15).pack(side="left", padx=14)
-    boton(acciones, "Consultar animales", lambda: abrir_catalogo(principal), "suave", ancho=220, alto=108, tam=15).pack(side="left", padx=14)
-    boton(acciones, "Generar factura", lambda: abrir_facturacion(principal), "suave", ancho=220, alto=108, tam=15).pack(side="left", padx=14)
+    def ubicar_botones():
+        boton_cerrar.place(relx=1.0, x=-48, y=30, anchor="ne")
+        for indice, widget in enumerate(botones):
+            widget.place(relx=0.5, rely=0.50, x=(indice - 1) * 234, anchor="n")
 
+    def dibujar():
+        estado["job"] = None
+        try:
+            if not lienzo.winfo_exists():
+                return
+            ancho = max(lienzo.winfo_width(), 480)
+            alto = max(lienzo.winfo_height(), 360)
+        except Exception:
+            return
+        if abs(ancho - estado["tam"][0]) < 40 and abs(alto - estado["tam"][1]) < 40:
+            return
+        estado["tam"] = (ancho, alto)
+        lienzo.delete("all")
+
+        if imagen is not None:
+            recorte = ImageOps.fit(imagen, (ancho, alto), Image.Resampling.LANCZOS)
+            foto = ImageTk.PhotoImage(recorte)
+            lienzo.create_image(0, 0, anchor="nw", image=foto)
+            estado["foto"] = foto
+
+        escala = ctk.ScalingTracker.get_widget_scaling(lienzo) or 1.0
+        margen = round(48 * escala)
+        lienzo.create_text(margen, round(30 * escala), anchor="nw", text="Métodos Campesinos", font=(FUENTE, 16, "bold"), fill=COLOR_TEXTO)
+        lienzo.create_text(ancho - margen - round(162 * escala), round(38 * escala), anchor="ne", text=f"Usuario: {usuario}", font=(FUENTE, 10), fill=COLOR_SECUNDARIO)
+        lienzo.create_text(ancho / 2, alto * 0.40, anchor="center", text="¿Qué deseas hacer?", font=(FUENTE, 20, "bold"), fill=COLOR_TEXTO)
+        lienzo.create_text(ancho / 2, alto * 0.40 + round(44 * escala), anchor="center", text="Selecciona una opción para continuar.", font=(FUENTE, 11), fill=COLOR_SECUNDARIO)
+        ubicar_botones()
+
+    def redimensionar(evento=None):
+        if evento is not None and evento.widget is not lienzo:
+            return
+        if estado["job"] is not None:
+            try:
+                lienzo.after_cancel(estado["job"])
+            except Exception:
+                pass
+        estado["job"] = lienzo.after(140, dibujar)
+
+    lienzo.bind("<Configure>", redimensionar)
     principal.protocol("WM_DELETE_WINDOW", lambda: cerrar_sesion(root, principal))
     root.ventana_principal = principal
     principal.focus_force()
+    lienzo.after(30, dibujar)
 
 def cerrar_sesion(root, principal):
     for atributo in ("ventana_catalogo", "ventana_registro_animal", "ventana_factura", "ventana_factura_vista"):
@@ -900,8 +950,9 @@ def abrir_facturacion(principal):
 
     factura = nueva_ventana(principal, "Generar factura", 1080, 740)
 
-    panel = tarjeta(factura, width=500)
+    panel = tarjeta(factura)
     panel.place(relx=0.5, rely=0.5, anchor="center")
+    fijar_ancho(panel, 500)
 
     etiqueta(panel, "Generar factura", 28, COLOR_TEXTO, negrita=True).pack(pady=(30, 2))
     etiqueta(panel, "Datos de la venta de bovinos.", 13, COLOR_SECUNDARIO).pack(pady=(0, 18))
