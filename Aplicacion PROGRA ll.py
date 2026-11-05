@@ -285,25 +285,25 @@ def crear_ventana_login():
     ajustar_ventana(root, 1180, 760)
     poner_fondo(root)
 
-    panel = tarjeta(root, width=430)
+    panel = tarjeta(root, width=460)
     panel.place(relx=0.5, rely=0.5, anchor="center")
 
-    etiqueta(panel, "Métodos Campesinos", 30, COLOR_TEXTO, negrita=True).pack(pady=(42, 2))
-    etiqueta(panel, "Control de ganado", 14, COLOR_SECUNDARIO).pack(pady=(0, 30))
+    etiqueta(panel, "Métodos Campesinos", 30, COLOR_TEXTO, negrita=True).pack(pady=(48, 2))
+    etiqueta(panel, "Control de ganado", 14, COLOR_SECUNDARIO).pack(pady=(0, 34))
 
-    etiqueta(panel, "Usuario", 13, COLOR_SECUNDARIO, anchor="w").pack(fill="x", padx=44)
+    etiqueta(panel, "Usuario", 13, COLOR_SECUNDARIO, anchor="w").pack(fill="x", padx=48)
     entry_usuario = entrada(panel, "Escribe tu usuario")
-    entry_usuario.pack(fill="x", padx=44, pady=(4, 14))
+    entry_usuario.pack(fill="x", padx=48, pady=(4, 16))
 
-    etiqueta(panel, "Contraseña", 13, COLOR_SECUNDARIO, anchor="w").pack(fill="x", padx=44)
+    etiqueta(panel, "Contraseña", 13, COLOR_SECUNDARIO, anchor="w").pack(fill="x", padx=48)
     entry_contrasena = entrada(panel, "Escribe tu contraseña", show="*")
-    entry_contrasena.pack(fill="x", padx=44, pady=(4, 24))
+    entry_contrasena.pack(fill="x", padx=48, pady=(4, 28))
 
-    boton(panel, "Iniciar sesión", lambda: iniciar_sesion(root), "primario").pack(fill="x", padx=44)
-    boton(panel, "Crear usuario", lambda: abrir_registro_cuenta(root), "suave").pack(fill="x", padx=44, pady=(10, 0))
+    boton(panel, "Iniciar sesión", lambda: iniciar_sesion(root), "primario").pack(fill="x", padx=48)
+    boton(panel, "Crear usuario", lambda: abrir_registro_cuenta(root), "suave").pack(fill="x", padx=48, pady=(10, 0))
 
-    mensaje = etiqueta(panel, "", 13, COLOR_PELIGRO, wraplength=340)
-    mensaje.pack(pady=(16, 0))
+    mensaje = etiqueta(panel, "", 13, COLOR_PELIGRO, wraplength=350)
+    mensaje.pack(pady=(16, 24))
 
     root.entry_usuario = entry_usuario
     root.entry_contrasena = entry_contrasena
@@ -341,22 +341,22 @@ def abrir_registro_cuenta(root):
 
     ventana = nueva_ventana(root, "Crear usuario", 1040, 700)
 
-    panel = tarjeta(ventana, width=430)
+    panel = tarjeta(ventana, width=460)
     panel.place(relx=0.5, rely=0.5, anchor="center")
 
-    etiqueta(panel, "Crear usuario", 28, COLOR_TEXTO, negrita=True).pack(pady=(38, 2))
-    etiqueta(panel, "Elige un nombre y una contraseña.", 13, COLOR_SECUNDARIO).pack(pady=(0, 26))
+    etiqueta(panel, "Crear usuario", 28, COLOR_TEXTO, negrita=True).pack(pady=(42, 2))
+    etiqueta(panel, "Elige un nombre y una contraseña.", 13, COLOR_SECUNDARIO).pack(pady=(0, 30))
 
-    etiqueta(panel, "Nuevo usuario", 13, COLOR_SECUNDARIO, anchor="w").pack(fill="x", padx=44)
+    etiqueta(panel, "Nuevo usuario", 13, COLOR_SECUNDARIO, anchor="w").pack(fill="x", padx=48)
     entry_usuario = entrada(panel, "Nombre de usuario")
-    entry_usuario.pack(fill="x", padx=44, pady=(4, 14))
+    entry_usuario.pack(fill="x", padx=48, pady=(4, 16))
 
-    etiqueta(panel, "Contraseña", 13, COLOR_SECUNDARIO, anchor="w").pack(fill="x", padx=44)
+    etiqueta(panel, "Contraseña", 13, COLOR_SECUNDARIO, anchor="w").pack(fill="x", padx=48)
     entry_contrasena = entrada(panel, "Contraseña", show="*")
-    entry_contrasena.pack(fill="x", padx=44, pady=(4, 18))
+    entry_contrasena.pack(fill="x", padx=48, pady=(4, 22))
 
-    mensaje = etiqueta(panel, "", 12, COLOR_PELIGRO, wraplength=340)
-    mensaje.pack(pady=(0, 10))
+    mensaje = etiqueta(panel, "", 12, COLOR_PELIGRO, wraplength=350)
+    mensaje.pack(pady=(0, 12))
 
     def cerrar():
         try:
@@ -389,8 +389,8 @@ def abrir_registro_cuenta(root):
 
         cerrar()
 
-    boton(panel, "Crear cuenta", guardar_y_cerrar, "primario").pack(fill="x", padx=44)
-    boton(panel, "Cancelar", cerrar, "texto", alto=34).pack(fill="x", padx=44, pady=(6, 0))
+    boton(panel, "Crear cuenta", guardar_y_cerrar, "primario").pack(fill="x", padx=48)
+    boton(panel, "Cancelar", cerrar, "texto", alto=34).pack(fill="x", padx=48, pady=(6, 10))
 
     ventana.protocol("WM_DELETE_WINDOW", cerrar)
     root.ventana_registro_cuenta = ventana
@@ -522,16 +522,6 @@ def abrir_formulario_animal(principal):
     boton(pie, "Limpiar", lambda: limpiar(), "suave", ancho=110, alto=40).pack(side="right", padx=(8, 0))
     boton(pie, "Volver", lambda: volver(), "suave", ancho=110, alto=40).pack(side="right", padx=(8, 0))
 
-    def actualizar_procedencia(valor):
-        if valor == "Criado en la granja":
-            entry_procedencia.configure(state="normal")
-            entry_procedencia.delete(0, "end")
-            entry_procedencia.configure(state="disabled")
-        else:
-            entry_procedencia.configure(state="normal")
-
-    combo_origen.configure(command=actualizar_procedencia)
-
     def mostrar_error(texto):
         mensaje.configure(text=texto, text_color=COLOR_PELIGRO)
 
@@ -540,7 +530,6 @@ def abrir_formulario_animal(principal):
             campo.delete(0, "end")
         for combo, valor in ((combo_raza, "Mestizo"), (combo_sexo, "Hembra"), (combo_proposito, "Doble propósito"), (combo_origen, "Criado en la granja"), (combo_estado, "Activo")):
             combo.set(valor)
-        actualizar_procedencia("Criado en la granja")
         entry_fecha_ingreso.insert(0, date.today().isoformat())
         texto_observaciones.delete("1.0", "end")
         mensaje.configure(text="")
@@ -657,7 +646,6 @@ def abrir_formulario_animal(principal):
     formulario.guardar = guardar
     formulario.limpiar = limpiar
 
-    actualizar_procedencia(combo_origen.get())
     entry_identificacion.focus_set()
     formulario.focus_force()
 
@@ -912,35 +900,35 @@ def abrir_facturacion(principal):
 
     factura = nueva_ventana(principal, "Generar factura", 1080, 740)
 
-    panel = tarjeta(factura, width=470)
+    panel = tarjeta(factura, width=480)
     panel.place(relx=0.5, rely=0.5, anchor="center")
 
-    etiqueta(panel, "Generar factura", 28, COLOR_TEXTO, negrita=True).pack(pady=(28, 2))
-    etiqueta(panel, "Datos de la venta de bovinos.", 13, COLOR_SECUNDARIO).pack(pady=(0, 16))
+    etiqueta(panel, "Generar factura", 28, COLOR_TEXTO, negrita=True).pack(pady=(30, 2))
+    etiqueta(panel, "Datos de la venta de bovinos.", 13, COLOR_SECUNDARIO).pack(pady=(0, 18))
 
-    etiqueta(panel, "Granja", 12, COLOR_SECUNDARIO, anchor="w").pack(fill="x", padx=44)
+    etiqueta(panel, "Granja", 12, COLOR_SECUNDARIO, anchor="w").pack(fill="x", padx=46)
     entry_granja = entrada(panel, "Nombre de la granja")
-    entry_granja.pack(fill="x", padx=44, pady=(3, 10))
+    entry_granja.pack(fill="x", padx=46, pady=(3, 12))
 
-    etiqueta(panel, "Comprador", 12, COLOR_SECUNDARIO, anchor="w").pack(fill="x", padx=44)
+    etiqueta(panel, "Comprador", 12, COLOR_SECUNDARIO, anchor="w").pack(fill="x", padx=46)
     entry_comprador = entrada(panel, "Nombre del comprador")
-    entry_comprador.pack(fill="x", padx=44, pady=(3, 10))
+    entry_comprador.pack(fill="x", padx=46, pady=(3, 12))
 
-    etiqueta(panel, "Fecha", 12, COLOR_SECUNDARIO, anchor="w").pack(fill="x", padx=44)
+    etiqueta(panel, "Fecha", 12, COLOR_SECUNDARIO, anchor="w").pack(fill="x", padx=46)
     entry_fecha = entrada(panel, "AAAA-MM-DD")
-    entry_fecha.pack(fill="x", padx=44, pady=(3, 10))
+    entry_fecha.pack(fill="x", padx=46, pady=(3, 12))
     entry_fecha.insert(0, date.today().isoformat())
 
-    etiqueta(panel, "Número de vacas", 12, COLOR_SECUNDARIO, anchor="w").pack(fill="x", padx=44)
+    etiqueta(panel, "Número de vacas", 12, COLOR_SECUNDARIO, anchor="w").pack(fill="x", padx=46)
     entry_vacas = entrada(panel, "Ej: 5")
-    entry_vacas.pack(fill="x", padx=44, pady=(3, 10))
+    entry_vacas.pack(fill="x", padx=46, pady=(3, 12))
 
-    etiqueta(panel, "Precio por libra", 12, COLOR_SECUNDARIO, anchor="w").pack(fill="x", padx=44)
+    etiqueta(panel, "Precio por libra", 12, COLOR_SECUNDARIO, anchor="w").pack(fill="x", padx=46)
     entry_precio = entrada(panel, "Ej: 12000")
-    entry_precio.pack(fill="x", padx=44, pady=(3, 12))
+    entry_precio.pack(fill="x", padx=46, pady=(3, 14))
 
-    mensaje = etiqueta(panel, "", 12, COLOR_PELIGRO, wraplength=370, justify="left")
-    mensaje.pack(fill="x", padx=44, pady=(0, 6))
+    mensaje = etiqueta(panel, "", 12, COLOR_PELIGRO, wraplength=380, justify="left")
+    mensaje.pack(fill="x", padx=46, pady=(0, 8))
 
     def abrir_vista_factura(texto):
         if ventana_abierta(principal, "ventana_factura_vista"):
@@ -1046,8 +1034,8 @@ def abrir_facturacion(principal):
             pass
         principal.ventana_factura = None
 
-    boton(panel, "Generar factura", lambda: generar(), "primario").pack(fill="x", padx=44)
-    boton(panel, "Volver", lambda: cerrar(), "texto", alto=34).pack(fill="x", padx=44, pady=(6, 0))
+    boton(panel, "Generar factura", lambda: generar(), "primario").pack(fill="x", padx=46)
+    boton(panel, "Volver", lambda: cerrar(), "texto", alto=34).pack(fill="x", padx=46, pady=(6, 18))
 
     factura.protocol("WM_DELETE_WINDOW", cerrar)
     principal.ventana_factura = factura
