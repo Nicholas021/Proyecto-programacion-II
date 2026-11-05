@@ -46,10 +46,10 @@ def etiqueta(padre, texto, tam=14, color=COLOR_TEXTO, negrita=False, **kw):
     fuente = (FUENTE, tam, "bold") if negrita else (FUENTE, tam)
     return ctk.CTkLabel(padre, text=texto, font=fuente, text_color=color, **kw)
 
-def entrada(padre, marcador="", alto=40, **kw):
+def entrada(padre, marcador="", alto=44, **kw):
     return ctk.CTkEntry(padre, height=alto, font=(FUENTE, 14), placeholder_text=marcador, corner_radius=10, fg_color="white", border_color=COLOR_BORDE, border_width=1, **kw)
 
-def boton(padre, texto, comando, tipo="primario", ancho=170, alto=42, tam=14, **kw):
+def boton(padre, texto, comando, tipo="primario", ancho=170, alto=44, tam=14, **kw):
     estilos = {
         "primario": {"fg_color": COLOR_PRIMARIO, "hover_color": COLOR_PRIMARIO_HOVER, "text_color": "white", "border_width": 0},
         "suave": {"fg_color": COLOR_SUAVE, "hover_color": COLOR_BORDE, "text_color": COLOR_TEXTO, "border_width": 1, "border_color": COLOR_BORDE},
@@ -285,25 +285,25 @@ def crear_ventana_login():
     ajustar_ventana(root, 1180, 760)
     poner_fondo(root)
 
-    panel = tarjeta(root, width=480)
+    panel = tarjeta(root, width=500)
     panel.place(relx=0.5, rely=0.5, anchor="center")
 
-    etiqueta(panel, "Métodos Campesinos", 30, COLOR_TEXTO, negrita=True).pack(pady=(48, 2))
-    etiqueta(panel, "Control de ganado", 14, COLOR_SECUNDARIO).pack(pady=(0, 34))
+    etiqueta(panel, "Métodos Campesinos", 30, COLOR_TEXTO, negrita=True).pack(pady=(52, 4))
+    etiqueta(panel, "Control de ganado", 14, COLOR_SECUNDARIO).pack(pady=(0, 38))
 
-    etiqueta(panel, "Usuario", 13, COLOR_SECUNDARIO, anchor="w").pack(fill="x", padx=56)
+    etiqueta(panel, "Usuario", 13, COLOR_SECUNDARIO, anchor="w").pack(fill="x", padx=60)
     entry_usuario = entrada(panel, "Escribe tu usuario")
-    entry_usuario.pack(fill="x", padx=56, pady=(4, 16))
+    entry_usuario.pack(fill="x", padx=60, pady=(6, 18))
 
-    etiqueta(panel, "Contraseña", 13, COLOR_SECUNDARIO, anchor="w").pack(fill="x", padx=56)
+    etiqueta(panel, "Contraseña", 13, COLOR_SECUNDARIO, anchor="w").pack(fill="x", padx=60)
     entry_contrasena = entrada(panel, "Escribe tu contraseña", show="*")
-    entry_contrasena.pack(fill="x", padx=56, pady=(4, 28))
+    entry_contrasena.pack(fill="x", padx=60, pady=(6, 34))
 
-    boton(panel, "Iniciar sesión", lambda: iniciar_sesion(root), "primario").pack(fill="x", padx=56)
-    boton(panel, "Crear usuario", lambda: abrir_registro_cuenta(root), "suave").pack(fill="x", padx=56, pady=(10, 0))
+    boton(panel, "Iniciar sesión", lambda: iniciar_sesion(root), "primario").pack(fill="x", padx=60)
+    boton(panel, "Crear usuario", lambda: abrir_registro_cuenta(root), "suave").pack(fill="x", padx=60, pady=(12, 0))
 
-    mensaje = etiqueta(panel, "", 13, COLOR_PELIGRO, wraplength=360)
-    mensaje.pack(pady=(16, 24))
+    mensaje = etiqueta(panel, "", 13, COLOR_PELIGRO, wraplength=380)
+    mensaje.pack(pady=(18, 28))
 
     root.entry_usuario = entry_usuario
     root.entry_contrasena = entry_contrasena
@@ -341,21 +341,21 @@ def abrir_registro_cuenta(root):
 
     ventana = nueva_ventana(root, "Crear usuario", 1040, 700)
 
-    panel = tarjeta(ventana, width=480)
+    panel = tarjeta(ventana, width=500)
     panel.place(relx=0.5, rely=0.5, anchor="center")
 
-    etiqueta(panel, "Crear usuario", 28, COLOR_TEXTO, negrita=True).pack(pady=(42, 2))
-    etiqueta(panel, "Elige un nombre y una contraseña.", 13, COLOR_SECUNDARIO).pack(pady=(0, 30))
+    etiqueta(panel, "Crear usuario", 28, COLOR_TEXTO, negrita=True).pack(pady=(46, 4))
+    etiqueta(panel, "Elige un nombre y una contraseña.", 13, COLOR_SECUNDARIO).pack(pady=(0, 34))
 
-    etiqueta(panel, "Nuevo usuario", 13, COLOR_SECUNDARIO, anchor="w").pack(fill="x", padx=56)
+    etiqueta(panel, "Nuevo usuario", 13, COLOR_SECUNDARIO, anchor="w").pack(fill="x", padx=60)
     entry_usuario = entrada(panel, "Nombre de usuario")
-    entry_usuario.pack(fill="x", padx=56, pady=(4, 16))
+    entry_usuario.pack(fill="x", padx=60, pady=(6, 18))
 
-    etiqueta(panel, "Contraseña", 13, COLOR_SECUNDARIO, anchor="w").pack(fill="x", padx=56)
+    etiqueta(panel, "Contraseña", 13, COLOR_SECUNDARIO, anchor="w").pack(fill="x", padx=60)
     entry_contrasena = entrada(panel, "Contraseña", show="*")
-    entry_contrasena.pack(fill="x", padx=56, pady=(4, 22))
+    entry_contrasena.pack(fill="x", padx=60, pady=(6, 26))
 
-    mensaje = etiqueta(panel, "", 12, COLOR_PELIGRO, wraplength=360)
+    mensaje = etiqueta(panel, "", 12, COLOR_PELIGRO, wraplength=380)
     mensaje.pack(pady=(0, 12))
 
     def cerrar():
@@ -389,8 +389,8 @@ def abrir_registro_cuenta(root):
 
         cerrar()
 
-    boton(panel, "Crear cuenta", guardar_y_cerrar, "primario").pack(fill="x", padx=56)
-    boton(panel, "Cancelar", cerrar, "texto", alto=34).pack(fill="x", padx=56, pady=(6, 10))
+    boton(panel, "Crear cuenta", guardar_y_cerrar, "primario").pack(fill="x", padx=60)
+    boton(panel, "Cancelar", cerrar, "texto", alto=34).pack(fill="x", padx=60, pady=(8, 12))
 
     ventana.protocol("WM_DELETE_WINDOW", cerrar)
     root.ventana_registro_cuenta = ventana
@@ -406,24 +406,24 @@ def abrir_menu_principal(root, usuario):
     root.withdraw()
 
     barra = ctk.CTkFrame(principal, fg_color="transparent")
-    barra.pack(fill="x", padx=40, pady=(26, 0))
+    barra.pack(fill="x", padx=48, pady=(30, 0))
 
     etiqueta(barra, "Métodos Campesinos", 22, COLOR_TEXTO, negrita=True).pack(side="left")
     boton(barra, "Cerrar sesión", lambda: cerrar_sesion(root, principal), "texto", ancho=130, alto=34).pack(side="right")
-    etiqueta(barra, f"Usuario: {usuario}", 13, COLOR_SECUNDARIO).pack(side="right", padx=(0, 18))
+    etiqueta(barra, f"Usuario: {usuario}", 13, COLOR_SECUNDARIO).pack(side="right", padx=(0, 22))
 
     centro = ctk.CTkFrame(principal, fg_color="transparent")
     centro.place(relx=0.5, rely=0.52, anchor="center")
 
     etiqueta(centro, "¿Qué deseas hacer?", 26, COLOR_TEXTO, negrita=True).pack()
-    etiqueta(centro, "Selecciona una opción para continuar.", 14, COLOR_SECUNDARIO).pack(pady=(6, 30))
+    etiqueta(centro, "Selecciona una opción para continuar.", 14, COLOR_SECUNDARIO).pack(pady=(10, 40))
 
     acciones = ctk.CTkFrame(centro, fg_color="transparent")
     acciones.pack()
 
-    boton(acciones, "Registrar animal", lambda: abrir_formulario_animal(principal), "suave", ancho=210, alto=100, tam=15).pack(side="left", padx=10)
-    boton(acciones, "Consultar animales", lambda: abrir_catalogo(principal), "suave", ancho=210, alto=100, tam=15).pack(side="left", padx=10)
-    boton(acciones, "Generar factura", lambda: abrir_facturacion(principal), "suave", ancho=210, alto=100, tam=15).pack(side="left", padx=10)
+    boton(acciones, "Registrar animal", lambda: abrir_formulario_animal(principal), "suave", ancho=220, alto=108, tam=15).pack(side="left", padx=14)
+    boton(acciones, "Consultar animales", lambda: abrir_catalogo(principal), "suave", ancho=220, alto=108, tam=15).pack(side="left", padx=14)
+    boton(acciones, "Generar factura", lambda: abrir_facturacion(principal), "suave", ancho=220, alto=108, tam=15).pack(side="left", padx=14)
 
     principal.protocol("WM_DELETE_WINDOW", lambda: cerrar_sesion(root, principal))
     root.ventana_principal = principal
@@ -468,30 +468,30 @@ def abrir_formulario_animal(principal):
     panel.grid_rowconfigure(1, weight=1)
 
     cabecera = ctk.CTkFrame(panel, fg_color="transparent")
-    cabecera.grid(row=0, column=0, sticky="ew", padx=28, pady=(22, 8))
-    etiqueta(cabecera, "Registrar animal", 26, COLOR_TEXTO, negrita=True).pack(anchor="w")
-    etiqueta(cabecera, "Hoja técnica básica del bovino.", 13, COLOR_SECUNDARIO).pack(anchor="w", pady=(2, 0))
+    cabecera.grid(row=0, column=0, sticky="ew", padx=36, pady=(28, 12))
+    etiqueta(cabecera, "Registrar animal", 28, COLOR_TEXTO, negrita=True).pack(anchor="w")
+    etiqueta(cabecera, "Hoja técnica básica del bovino.", 13, COLOR_SECUNDARIO).pack(anchor="w", pady=(4, 0))
 
     marco = ctk.CTkScrollableFrame(panel, fg_color=COLOR_TARJETA, bg_color=COLOR_TARJETA, corner_radius=0, scrollbar_button_color=COLOR_BORDE, scrollbar_button_hover_color=COLOR_PRIMARIO)
-    marco.grid(row=1, column=0, sticky="nsew", padx=18, pady=(0, 8))
+    marco.grid(row=1, column=0, sticky="nsew", padx=24, pady=(0, 10))
     marco.grid_columnconfigure(0, weight=1)
     marco.grid_columnconfigure(1, weight=1)
 
     def agregar_campo(fila, columna, texto, tipo="entry", valores=None, marcador="", columnas=1):
         contenedor = ctk.CTkFrame(marco, fg_color="transparent")
-        contenedor.grid(row=fila, column=columna, columnspan=columnas, sticky="ew", padx=10, pady=5)
+        contenedor.grid(row=fila, column=columna, columnspan=columnas, sticky="ew", padx=12, pady=8)
         etiqueta(contenedor, texto, 12, COLOR_SECUNDARIO, anchor="w").pack(fill="x")
 
         if tipo.startswith("combo"):
-            widget = ctk.CTkComboBox(contenedor, values=valores or [], state="readonly" if tipo == "combo" else "normal", height=38, font=(FUENTE, 14), corner_radius=10, border_width=1, border_color=COLOR_BORDE)
+            widget = ctk.CTkComboBox(contenedor, values=valores or [], state="readonly" if tipo == "combo" else "normal", height=42, font=(FUENTE, 14), corner_radius=10, border_width=1, border_color=COLOR_BORDE)
             if valores:
                 widget.set(valores[0])
         elif tipo == "texto":
-            widget = ctk.CTkTextbox(contenedor, height=80, font=(FUENTE, 14), corner_radius=10, border_width=1, border_color=COLOR_BORDE, fg_color="white")
+            widget = ctk.CTkTextbox(contenedor, height=96, font=(FUENTE, 14), corner_radius=10, border_width=1, border_color=COLOR_BORDE, fg_color="white")
         else:
             widget = entrada(contenedor, marcador)
 
-        widget.pack(fill="x", pady=(3, 0))
+        widget.pack(fill="x", pady=(6, 0))
         return widget
 
     entry_identificacion = agregar_campo(0, 0, "Identificación / arete *", marcador="Ej: AR-001")
@@ -513,14 +513,14 @@ def abrir_formulario_animal(principal):
     entry_fecha_ingreso.insert(0, date.today().isoformat())
 
     pie = ctk.CTkFrame(panel, fg_color="transparent")
-    pie.grid(row=2, column=0, sticky="ew", padx=28, pady=(0, 18))
+    pie.grid(row=2, column=0, sticky="ew", padx=36, pady=(0, 24))
 
-    mensaje = etiqueta(pie, "", 12, COLOR_PELIGRO, anchor="w", wraplength=560, justify="left")
+    mensaje = etiqueta(pie, "", 12, COLOR_PELIGRO, anchor="w", wraplength=620, justify="left")
     mensaje.pack(side="left", fill="x", expand=True)
 
-    boton(pie, "Guardar animal", lambda: guardar(), "primario", ancho=170, alto=40).pack(side="right")
-    boton(pie, "Limpiar", lambda: limpiar(), "suave", ancho=110, alto=40).pack(side="right", padx=(8, 0))
-    boton(pie, "Volver", lambda: volver(), "suave", ancho=110, alto=40).pack(side="right", padx=(8, 0))
+    boton(pie, "Guardar animal", lambda: guardar(), "primario", ancho=180, alto=42).pack(side="right")
+    boton(pie, "Limpiar", lambda: limpiar(), "suave", ancho=120, alto=42).pack(side="right", padx=(10, 0))
+    boton(pie, "Volver", lambda: volver(), "suave", ancho=120, alto=42).pack(side="right", padx=(10, 0))
 
     def mostrar_error(texto):
         mensaje.configure(text=texto, text_color=COLOR_PELIGRO)
@@ -658,50 +658,50 @@ def abrir_catalogo(principal):
 
     panel = tarjeta(catalogo)
     panel.place(relx=0.5, rely=0.5, anchor="center", relwidth=0.94, relheight=0.9)
-    panel.grid_columnconfigure(0, weight=0, minsize=310)
+    panel.grid_columnconfigure(0, weight=0, minsize=330)
     panel.grid_columnconfigure(1, weight=1)
     panel.grid_rowconfigure(1, weight=1)
 
     cabecera = ctk.CTkFrame(panel, fg_color="transparent")
-    cabecera.grid(row=0, column=0, columnspan=2, sticky="ew", padx=26, pady=(20, 8))
-    etiqueta(cabecera, "Animales", 26, COLOR_TEXTO, negrita=True).pack(side="left")
+    cabecera.grid(row=0, column=0, columnspan=2, sticky="ew", padx=32, pady=(24, 12))
+    etiqueta(cabecera, "Animales", 28, COLOR_TEXTO, negrita=True).pack(side="left")
     contador = etiqueta(cabecera, "", 13, COLOR_SECUNDARIO)
     contador.pack(side="right")
 
     izquierdo = ctk.CTkFrame(panel, fg_color=COLOR_SUAVE, corner_radius=16)
-    izquierdo.grid(row=1, column=0, sticky="nsew", padx=(26, 10), pady=(0, 22))
+    izquierdo.grid(row=1, column=0, sticky="nsew", padx=(32, 14), pady=(0, 26))
 
-    etiqueta(izquierdo, "Buscar", 12, COLOR_SECUNDARIO, anchor="w").pack(fill="x", padx=12, pady=(14, 4))
+    etiqueta(izquierdo, "Buscar", 12, COLOR_SECUNDARIO, anchor="w").pack(fill="x", padx=16, pady=(18, 6))
     fila_busqueda = ctk.CTkFrame(izquierdo, fg_color="transparent")
-    fila_busqueda.pack(fill="x", padx=12)
+    fila_busqueda.pack(fill="x", padx=16)
 
-    entry_busqueda = entrada(fila_busqueda, "Nombre o arete", alto=36)
-    entry_busqueda.pack(side="left", fill="x", expand=True, padx=(0, 6))
-    boton(fila_busqueda, "Buscar", lambda: actualizar_lista(), "primario", ancho=80, alto=36, tam=12).pack(side="left")
+    entry_busqueda = entrada(fila_busqueda, "Nombre o arete", alto=38)
+    entry_busqueda.pack(side="left", fill="x", expand=True, padx=(0, 8))
+    boton(fila_busqueda, "Buscar", lambda: actualizar_lista(), "primario", ancho=84, alto=38, tam=12).pack(side="left")
     entry_busqueda.bind("<Return>", lambda event: actualizar_lista())
 
-    etiqueta(izquierdo, "Filtrar por", 12, COLOR_SECUNDARIO, anchor="w").pack(fill="x", padx=12, pady=(14, 4))
+    etiqueta(izquierdo, "Filtrar por", 12, COLOR_SECUNDARIO, anchor="w").pack(fill="x", padx=16, pady=(18, 6))
     marco_categorias = ctk.CTkFrame(izquierdo, fg_color="transparent")
-    marco_categorias.pack(fill="x", padx=9)
+    marco_categorias.pack(fill="x", padx=11)
     marco_categorias.grid_columnconfigure(0, weight=1)
     marco_categorias.grid_columnconfigure(1, weight=1)
 
     botones_categoria = {}
     for indice, (clave, titulo) in enumerate(CAMPOS_FILTRO):
-        boton_cat = boton(marco_categorias, titulo, lambda c=clave: seleccionar_categoria(c), "suave", alto=32, tam=12)
-        boton_cat.grid(row=indice // 2, column=indice % 2, padx=3, pady=3, sticky="ew")
+        boton_cat = boton(marco_categorias, titulo, lambda c=clave: seleccionar_categoria(c), "suave", alto=34, tam=12)
+        boton_cat.grid(row=indice // 2, column=indice % 2, padx=5, pady=5, sticky="ew")
         botones_categoria[clave] = boton_cat
 
-    boton(izquierdo, "Volver", lambda: cerrar_catalogo(), "texto", alto=34, tam=12).pack(side="bottom", fill="x", padx=12, pady=(0, 14))
-    boton(izquierdo, "Limpiar filtros", lambda: limpiar_filtros(), "suave", alto=34, tam=12).pack(side="bottom", fill="x", padx=12, pady=(0, 4))
-    boton(izquierdo, "Ver hoja técnica", lambda: mostrar_hoja(), "primario", alto=34, tam=12).pack(side="bottom", fill="x", padx=12, pady=(6, 0))
+    boton(izquierdo, "Volver", lambda: cerrar_catalogo(), "texto", alto=34, tam=12).pack(side="bottom", fill="x", padx=16, pady=(0, 18))
+    boton(izquierdo, "Limpiar filtros", lambda: limpiar_filtros(), "suave", alto=34, tam=12).pack(side="bottom", fill="x", padx=16, pady=(0, 6))
+    boton(izquierdo, "Ver hoja técnica", lambda: mostrar_hoja(), "primario", alto=36, tam=12).pack(side="bottom", fill="x", padx=16, pady=(8, 0))
 
-    etiqueta(izquierdo, "Valores", 12, COLOR_SECUNDARIO, anchor="w").pack(fill="x", padx=12, pady=(14, 4))
-    panel_valores = ctk.CTkScrollableFrame(izquierdo, height=170, fg_color=COLOR_TARJETA, bg_color=COLOR_TARJETA, corner_radius=12, scrollbar_button_color=COLOR_BORDE, scrollbar_button_hover_color=COLOR_PRIMARIO)
-    panel_valores.pack(fill="both", expand=True, padx=12, pady=(0, 6))
+    etiqueta(izquierdo, "Valores", 12, COLOR_SECUNDARIO, anchor="w").pack(fill="x", padx=16, pady=(18, 6))
+    panel_valores = ctk.CTkScrollableFrame(izquierdo, height=180, fg_color=COLOR_TARJETA, bg_color=COLOR_TARJETA, corner_radius=12, scrollbar_button_color=COLOR_BORDE, scrollbar_button_hover_color=COLOR_PRIMARIO)
+    panel_valores.pack(fill="both", expand=True, padx=16, pady=(0, 8))
 
     derecho = ctk.CTkFrame(panel, fg_color="transparent")
-    derecho.grid(row=1, column=1, sticky="nsew", padx=(10, 26), pady=(0, 22))
+    derecho.grid(row=1, column=1, sticky="nsew", padx=(14, 32), pady=(0, 26))
     derecho.grid_rowconfigure(0, weight=1)
     derecho.grid_columnconfigure(0, weight=1)
 
@@ -715,8 +715,8 @@ def abrir_catalogo(principal):
         estilo.theme_use("clam")
     except Exception:
         pass
-    estilo.configure("Animales.Treeview", background=COLOR_TARJETA, foreground=COLOR_TEXTO, fieldbackground=COLOR_TARJETA, rowheight=30, font=(FUENTE, 11), borderwidth=0)
-    estilo.configure("Animales.Treeview.Heading", font=(FUENTE, 11, "bold"), background=COLOR_SUAVE, foreground=COLOR_TEXTO, borderwidth=0)
+    estilo.configure("Animales.Treeview", background=COLOR_TARJETA, foreground=COLOR_TEXTO, fieldbackground=COLOR_TARJETA, rowheight=34, font=(FUENTE, 11), borderwidth=0)
+    estilo.configure("Animales.Treeview.Heading", font=(FUENTE, 11, "bold"), background=COLOR_SUAVE, foreground=COLOR_TEXTO, borderwidth=0, padding=(8, 6))
 
     columnas = [("identificacion", "Arete", 110), ("nombre", "Nombre", 130), ("raza", "Raza", 110), ("sexo", "Sexo", 80), ("peso", "Peso (kg)", 90), ("origen", "Origen", 160)]
 
@@ -784,15 +784,15 @@ def abrir_catalogo(principal):
         panel_hoja.place(relx=0.5, rely=0.5, anchor="center", relwidth=0.9, relheight=0.92)
 
         cabecera = ctk.CTkFrame(panel_hoja, fg_color="transparent")
-        cabecera.pack(fill="x", padx=22, pady=(18, 8))
+        cabecera.pack(fill="x", padx=28, pady=(22, 12))
         etiqueta(cabecera, "Hoja técnica del bovino", 24, COLOR_TEXTO, negrita=True).pack(side="left")
         etiqueta(cabecera, animal.get("identificacion", ""), 13, COLOR_SECUNDARIO).pack(side="right")
 
         caja = ctk.CTkTextbox(panel_hoja, font=("Consolas", 12), wrap="none", corner_radius=14, border_width=1, border_color=COLOR_BORDE, fg_color="white")
-        caja.pack(fill="both", expand=True, padx=22, pady=(0, 12))
+        caja.pack(fill="both", expand=True, padx=28, pady=(0, 14))
 
         pie = ctk.CTkFrame(panel_hoja, fg_color="transparent")
-        pie.pack(fill="x", padx=22, pady=(0, 16))
+        pie.pack(fill="x", padx=28, pady=(0, 20))
 
         def cerrar_hoja():
             try:
@@ -941,15 +941,15 @@ def abrir_facturacion(principal):
         panel_vista.place(relx=0.5, rely=0.5, anchor="center", relwidth=0.92, relheight=0.9)
 
         cabecera = ctk.CTkFrame(panel_vista, fg_color="transparent")
-        cabecera.pack(fill="x", padx=22, pady=(18, 8))
+        cabecera.pack(fill="x", padx=28, pady=(22, 12))
         etiqueta(cabecera, "Factura", 24, COLOR_TEXTO, negrita=True).pack(side="left")
         etiqueta(cabecera, f"Archivo: {RUTA_FACTURA.name}", 12, COLOR_SECUNDARIO).pack(side="right")
 
         caja = ctk.CTkTextbox(panel_vista, font=("Consolas", 12), wrap="none", corner_radius=14, border_width=1, border_color=COLOR_BORDE, fg_color="white")
-        caja.pack(fill="both", expand=True, padx=22, pady=(0, 12))
+        caja.pack(fill="both", expand=True, padx=28, pady=(0, 14))
 
         pie = ctk.CTkFrame(panel_vista, fg_color="transparent")
-        pie.pack(fill="x", padx=22, pady=(0, 16))
+        pie.pack(fill="x", padx=28, pady=(0, 20))
 
         def mostrar_factura(texto_vista):
             caja.configure(state="normal")
