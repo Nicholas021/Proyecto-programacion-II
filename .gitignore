@@ -187,3 +187,9 @@ cython_debug/
 # ============================================
 Cuentas.json
 credenciales.local.*
+
+# ============================================
+# Datos locales de la aplicacion (NO se suben a Git)
+# El registro de animales vive solo en la carpeta/OneDrive.
+# ============================================
+Hoja_datos.json
