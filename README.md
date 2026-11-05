@@ -15,6 +15,10 @@ generacion de facturas.
 - **Generacion de factura** en formato YAML con granja, comprador, fecha,
   vacas y precio por libra. La factura se abre en una ventana propia y permite
   abrir el archivo con el Bloc de notas.
+- **Acerca de** en una ventana propia, con la informacion del proyecto sobre la
+  misma imagen de fondo.
+- Todas las ventanas (login, menu, formulario, catalogo, hoja tecnica, factura
+  y acerca de) se pueden redimensionar y maximizar.
 - Los datos se guardan en `Hoja_datos.json`; las cuentas en `Cuentas.json`.
 
 ## Requisitos

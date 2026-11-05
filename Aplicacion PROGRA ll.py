@@ -135,7 +135,7 @@ def nueva_ventana(padre, titulo, ancho=1360, alto=840, fondo=True):
     ventana = ctk.CTkToplevel(padre)
     ventana.title(titulo)
     ajustar_ventana(ventana, ancho, alto)
-    ventana.transient(padre)
+    ventana.resizable(True, True)
     if fondo:
         poner_fondo(ventana)
     return ventana
@@ -428,12 +428,14 @@ def abrir_menu_principal(root, usuario):
         boton(principal, "Registrar animal", lambda: abrir_formulario_animal(principal), "primario", ancho=220, alto=108, tam=15),
         boton(principal, "Consultar animales", lambda: abrir_catalogo(principal), "suave", ancho=220, alto=108, tam=15),
         boton(principal, "Generar factura", lambda: abrir_facturacion(principal), "suave", ancho=220, alto=108, tam=15),
+        boton(principal, "Acerca de", lambda: abrir_acerca(principal), "suave", ancho=220, alto=108, tam=15),
     ]
 
     def ubicar_botones():
         boton_cerrar.place(relx=1.0, x=-48, y=30, anchor="ne")
+        centro = (len(botones) - 1) / 2
         for indice, widget in enumerate(botones):
-            widget.place(relx=0.5, rely=0.50, x=(indice - 1) * 234, anchor="n")
+            widget.place(relx=0.5, rely=0.50, x=round((indice - centro) * 234), anchor="n")
 
     def dibujar():
         estado["job"] = None
@@ -480,7 +482,7 @@ def abrir_menu_principal(root, usuario):
     lienzo.after(30, dibujar)
 
 def cerrar_sesion(root, principal):
-    for atributo in ("ventana_catalogo", "ventana_registro_animal", "ventana_factura", "ventana_factura_vista"):
+    for atributo in ("ventana_catalogo", "ventana_registro_animal", "ventana_factura", "ventana_factura_vista", "ventana_acerca"):
         ventana = getattr(principal, atributo, None)
         if ventana is not None:
             try:
@@ -1101,6 +1103,54 @@ def abrir_facturacion(principal):
     factura.generar = generar
 
     factura.focus_force()
+
+# --- Acerca de ---
+def abrir_acerca(principal):
+    if ventana_abierta(principal, "ventana_acerca"):
+        return
+
+    acerca = nueva_ventana(principal, "Acerca de", 920, 700)
+
+    panel = tarjeta(acerca)
+    panel.place(relx=0.5, rely=0.5, anchor="center")
+    fijar_ancho(panel, 580)
+
+    etiqueta(panel, "Métodos Campesinos", 28, COLOR_TEXTO, negrita=True).pack(pady=(42, 2))
+    etiqueta(panel, "Control de ganado", 14, COLOR_SECUNDARIO).pack(pady=(0, 24))
+
+    linea = ctk.CTkFrame(panel, height=1, fg_color=COLOR_BORDE)
+    linea.pack(fill="x", padx=64)
+
+    informacion = [
+        ("Versión", "1.0"),
+        ("Descripción", "Registro, consulta y facturación de bovinos."),
+        ("Datos", "Se guardan en tu equipo, en Hoja_datos.json."),
+        ("Tecnologías", "Python, CustomTkinter, Pillow y PyYAML."),
+        ("Proyecto", "Programación II"),
+    ]
+
+    cuerpo = ctk.CTkFrame(panel, fg_color="transparent")
+    cuerpo.pack(fill="x", padx=64, pady=(22, 6))
+
+    for titulo, valor in informacion:
+        fila = ctk.CTkFrame(cuerpo, fg_color="transparent")
+        fila.pack(fill="x", pady=7)
+        etiqueta(fila, titulo, 12, COLOR_SECUNDARIO, anchor="nw", width=110).pack(side="left", anchor="n")
+        etiqueta(fila, valor, 13, COLOR_TEXTO, anchor="nw", wraplength=340, justify="left").pack(side="left", fill="x", expand=True)
+
+    def cerrar():
+        try:
+            acerca.destroy()
+        except Exception:
+            pass
+        principal.ventana_acerca = None
+
+    boton(panel, "Cerrar", cerrar, "primario").pack(fill="x", padx=64, pady=(22, 32))
+
+    acerca.protocol("WM_DELETE_WINDOW", cerrar)
+    principal.ventana_acerca = acerca
+    acerca.cerrar = cerrar
+    acerca.focus_force()
 
 # --- Punto de entrada ---
 def main():
