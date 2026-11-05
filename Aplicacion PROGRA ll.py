@@ -18,14 +18,13 @@ RUTA_DATOS = BASE_DIR / "Hoja_datos.json"
 RUTA_FACTURA = BASE_DIR / "nuevo.txt"
 RUTA_IMAGEN = BASE_DIR / "IMAGEN DE APLICACION.jpg"
 
-# Paleta sencilla: fondo con imagen, tarjetas claras y un azul verdoso.
-COLOR_FONDO = "#dcecf3"
+# Paleta reducida: escala clara de fondos y un solo color de acción.
+COLOR_FONDO = "#eef7fa"
 COLOR_TARJETA = "#eef7fa"
-COLOR_SUAVE = "#dcecf2"
-COLOR_SUAVE_HOVER = "#c9e0e8"
-COLOR_BORDE = "#bcd8e3"
+COLOR_SUAVE = "#dcebf2"
+COLOR_BORDE = "#b9d5e1"
 COLOR_PRIMARIO = "#2d7d9a"
-COLOR_PRIMARIO_HOVER = "#24657d"
+COLOR_PRIMARIO_HOVER = "#26687f"
 COLOR_TEXTO = "#20313a"
 COLOR_SECUNDARIO = "#5f737d"
 COLOR_PELIGRO = "#b04a45"
@@ -53,7 +52,7 @@ def entrada(padre, marcador="", alto=40, **kw):
 def boton(padre, texto, comando, tipo="primario", ancho=170, alto=42, tam=14, **kw):
     estilos = {
         "primario": {"fg_color": COLOR_PRIMARIO, "hover_color": COLOR_PRIMARIO_HOVER, "text_color": "white", "border_width": 0},
-        "suave": {"fg_color": COLOR_SUAVE, "hover_color": COLOR_SUAVE_HOVER, "text_color": COLOR_TEXTO, "border_width": 1, "border_color": COLOR_BORDE},
+        "suave": {"fg_color": COLOR_SUAVE, "hover_color": COLOR_BORDE, "text_color": COLOR_TEXTO, "border_width": 1, "border_color": COLOR_BORDE},
         "peligro": {"fg_color": COLOR_PELIGRO, "hover_color": "#933c38", "text_color": "white", "border_width": 0},
         "texto": {"fg_color": "transparent", "hover_color": COLOR_SUAVE, "text_color": COLOR_SECUNDARIO, "border_width": 0},
     }
@@ -71,6 +70,7 @@ def ajustar_ventana(ventana, ancho=1360, alto=840):
     y = max((pantalla_alto - alto) // 2, 0)
     ventana.geometry(f"{ancho}x{alto}+{x}+{y}")
     ventana.minsize(min(1040, ancho), min(660, alto))
+    ventana.resizable(True, True)
     ventana.configure(fg_color=COLOR_FONDO)
 
 def cargar_imagen():
@@ -683,7 +683,7 @@ def abrir_catalogo(principal):
     izquierdo = ctk.CTkFrame(panel, fg_color=COLOR_SUAVE, corner_radius=16)
     izquierdo.grid(row=1, column=0, sticky="nsew", padx=(26, 10), pady=(0, 22))
 
-    etiqueta(izquierdo, "Buscar", 12, COLOR_SECUNDARIO, anchor="w").pack(fill="x", padx=16, pady=(14, 4))
+    etiqueta(izquierdo, "Buscar", 12, COLOR_SECUNDARIO, anchor="w").pack(fill="x", padx=12, pady=(14, 4))
     fila_busqueda = ctk.CTkFrame(izquierdo, fg_color="transparent")
     fila_busqueda.pack(fill="x", padx=12)
 
@@ -692,9 +692,9 @@ def abrir_catalogo(principal):
     boton(fila_busqueda, "Buscar", lambda: actualizar_lista(), "primario", ancho=80, alto=36, tam=12).pack(side="left")
     entry_busqueda.bind("<Return>", lambda event: actualizar_lista())
 
-    etiqueta(izquierdo, "Filtrar por", 12, COLOR_SECUNDARIO, anchor="w").pack(fill="x", padx=16, pady=(14, 4))
+    etiqueta(izquierdo, "Filtrar por", 12, COLOR_SECUNDARIO, anchor="w").pack(fill="x", padx=12, pady=(14, 4))
     marco_categorias = ctk.CTkFrame(izquierdo, fg_color="transparent")
-    marco_categorias.pack(fill="x", padx=10)
+    marco_categorias.pack(fill="x", padx=9)
     marco_categorias.grid_columnconfigure(0, weight=1)
     marco_categorias.grid_columnconfigure(1, weight=1)
 
@@ -708,7 +708,7 @@ def abrir_catalogo(principal):
     boton(izquierdo, "Limpiar filtros", lambda: limpiar_filtros(), "suave", alto=34, tam=12).pack(side="bottom", fill="x", padx=12, pady=(0, 4))
     boton(izquierdo, "Ver hoja técnica", lambda: mostrar_hoja(), "primario", alto=34, tam=12).pack(side="bottom", fill="x", padx=12, pady=(6, 0))
 
-    etiqueta(izquierdo, "Valores", 12, COLOR_SECUNDARIO, anchor="w").pack(fill="x", padx=16, pady=(14, 4))
+    etiqueta(izquierdo, "Valores", 12, COLOR_SECUNDARIO, anchor="w").pack(fill="x", padx=12, pady=(14, 4))
     panel_valores = ctk.CTkScrollableFrame(izquierdo, height=170, fg_color=COLOR_TARJETA, bg_color=COLOR_TARJETA, corner_radius=12, scrollbar_button_color=COLOR_BORDE, scrollbar_button_hover_color=COLOR_PRIMARIO)
     panel_valores.pack(fill="both", expand=True, padx=12, pady=(0, 6))
 
@@ -843,7 +843,7 @@ def abrir_catalogo(principal):
 
         for clave, boton_cat in botones_categoria.items():
             activo = clave == categoria
-            boton_cat.configure(fg_color=COLOR_PRIMARIO if activo else COLOR_SUAVE, hover_color=COLOR_PRIMARIO_HOVER if activo else COLOR_SUAVE_HOVER, text_color="white" if activo else COLOR_TEXTO)
+            boton_cat.configure(fg_color=COLOR_PRIMARIO if activo else COLOR_SUAVE, hover_color=COLOR_PRIMARIO_HOVER if activo else COLOR_BORDE, text_color="white" if activo else COLOR_TEXTO)
 
         for hijo in panel_valores.winfo_children():
             hijo.destroy()
@@ -865,7 +865,7 @@ def abrir_catalogo(principal):
         categoria_actual = None
 
         for boton_cat in botones_categoria.values():
-            boton_cat.configure(fg_color=COLOR_SUAVE, hover_color=COLOR_SUAVE_HOVER, text_color=COLOR_TEXTO)
+            boton_cat.configure(fg_color=COLOR_SUAVE, hover_color=COLOR_BORDE, text_color=COLOR_TEXTO)
         for hijo in panel_valores.winfo_children():
             hijo.destroy()
 
