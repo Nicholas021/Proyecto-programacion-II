@@ -285,9 +285,8 @@ def crear_ventana_login():
     ajustar_ventana(root, 1180, 760)
     poner_fondo(root)
 
-    panel = tarjeta(root, width=430, height=580)
+    panel = tarjeta(root, width=430)
     panel.place(relx=0.5, rely=0.5, anchor="center")
-    panel.pack_propagate(False)
 
     etiqueta(panel, "Métodos Campesinos", 30, COLOR_TEXTO, negrita=True).pack(pady=(42, 2))
     etiqueta(panel, "Control de ganado", 14, COLOR_SECUNDARIO).pack(pady=(0, 30))
@@ -342,9 +341,8 @@ def abrir_registro_cuenta(root):
 
     ventana = nueva_ventana(root, "Crear usuario", 1040, 700)
 
-    panel = tarjeta(ventana, width=430, height=480)
+    panel = tarjeta(ventana, width=430)
     panel.place(relx=0.5, rely=0.5, anchor="center")
-    panel.pack_propagate(False)
 
     etiqueta(panel, "Crear usuario", 28, COLOR_TEXTO, negrita=True).pack(pady=(38, 2))
     etiqueta(panel, "Elige un nombre y una contraseña.", 13, COLOR_SECUNDARIO).pack(pady=(0, 26))
@@ -520,9 +518,9 @@ def abrir_formulario_animal(principal):
     mensaje = etiqueta(pie, "", 12, COLOR_PELIGRO, anchor="w", wraplength=560, justify="left")
     mensaje.pack(side="left", fill="x", expand=True)
 
-    boton(pie, "Volver", lambda: volver(), "suave", ancho=110, alto=40).pack(side="right", padx=(8, 0))
-    boton(pie, "Limpiar", lambda: limpiar(), "suave", ancho=110, alto=40).pack(side="right", padx=(8, 0))
     boton(pie, "Guardar animal", lambda: guardar(), "primario", ancho=170, alto=40).pack(side="right")
+    boton(pie, "Limpiar", lambda: limpiar(), "suave", ancho=110, alto=40).pack(side="right", padx=(8, 0))
+    boton(pie, "Volver", lambda: volver(), "suave", ancho=110, alto=40).pack(side="right", padx=(8, 0))
 
     def actualizar_procedencia(valor):
         if valor == "Criado en la granja":
@@ -706,13 +704,13 @@ def abrir_catalogo(principal):
         boton_cat.grid(row=indice // 2, column=indice % 2, padx=3, pady=3, sticky="ew")
         botones_categoria[clave] = boton_cat
 
+    boton(izquierdo, "Volver", lambda: cerrar_catalogo(), "texto", alto=34, tam=12).pack(side="bottom", fill="x", padx=12, pady=(0, 14))
+    boton(izquierdo, "Limpiar filtros", lambda: limpiar_filtros(), "suave", alto=34, tam=12).pack(side="bottom", fill="x", padx=12, pady=(0, 4))
+    boton(izquierdo, "Ver hoja técnica", lambda: mostrar_hoja(), "primario", alto=34, tam=12).pack(side="bottom", fill="x", padx=12, pady=(6, 0))
+
     etiqueta(izquierdo, "Valores", 12, COLOR_SECUNDARIO, anchor="w").pack(fill="x", padx=16, pady=(14, 4))
     panel_valores = ctk.CTkScrollableFrame(izquierdo, height=170, fg_color=COLOR_TARJETA, bg_color=COLOR_TARJETA, corner_radius=12, scrollbar_button_color=COLOR_BORDE, scrollbar_button_hover_color=COLOR_PRIMARIO)
     panel_valores.pack(fill="both", expand=True, padx=12, pady=(0, 6))
-
-    boton(izquierdo, "Ver hoja técnica", lambda: mostrar_hoja(), "primario", alto=34, tam=12).pack(fill="x", padx=12, pady=(6, 4))
-    boton(izquierdo, "Limpiar filtros", lambda: limpiar_filtros(), "suave", alto=34, tam=12).pack(fill="x", padx=12, pady=(0, 4))
-    boton(izquierdo, "Volver", lambda: cerrar_catalogo(), "texto", alto=34, tam=12).pack(fill="x", padx=12, pady=(0, 14))
 
     derecho = ctk.CTkFrame(panel, fg_color="transparent")
     derecho.grid(row=1, column=1, sticky="nsew", padx=(10, 26), pady=(0, 22))
@@ -914,9 +912,8 @@ def abrir_facturacion(principal):
 
     factura = nueva_ventana(principal, "Generar factura", 1080, 740)
 
-    panel = tarjeta(factura, width=470, height=640)
+    panel = tarjeta(factura, width=470)
     panel.place(relx=0.5, rely=0.5, anchor="center")
-    panel.pack_propagate(False)
 
     etiqueta(panel, "Generar factura", 28, COLOR_TEXTO, negrita=True).pack(pady=(28, 2))
     etiqueta(panel, "Datos de la venta de bovinos.", 13, COLOR_SECUNDARIO).pack(pady=(0, 16))
