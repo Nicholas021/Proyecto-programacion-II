@@ -193,3 +193,6 @@ credenciales.local.*
 # El registro de animales vive solo en la carpeta/OneDrive.
 # ============================================
 Hoja_datos.json
+
+# Temporales de escritura atomica (se borran solos al guardar)
+*.tmp

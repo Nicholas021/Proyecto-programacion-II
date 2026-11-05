@@ -1,6 +1,7 @@
 from datetime import date, datetime
 from pathlib import Path
 import json
+import math
 import os
 import tkinter as tk
 
@@ -11,6 +12,11 @@ from tkinter import ttk
 
 ctk.set_appearance_mode("light")
 ctk.set_default_color_theme("blue")
+
+# En Windows CustomTkinter oculta la ventana para pintar la barra de titulo y,
+# si coincide con otro cambio, puede dejarla oculta. En modo claro la barra
+# nativa ya es clara, asi que desactivamos esa manipulacion.
+ctk.CTkToplevel._deactivate_windows_window_header_manipulation = True
 
 # --- Rutas y constantes ---
 BASE_DIR = Path(__file__).resolve().parent
@@ -108,7 +114,8 @@ def poner_fondo(ventana):
             alto = max(ventana.winfo_height(), 360)
         except Exception:
             return
-        if abs(ancho - estado["tam"][0]) < 40 and abs(alto - estado["tam"][1]) < 40:
+        anterior_ancho, anterior_alto = estado["tam"]
+        if 0 < ancho <= anterior_ancho and 0 < alto <= anterior_alto:
             return
         estado["tam"] = (ancho, alto)
         escala = ctk.ScalingTracker.get_widget_scaling(fondo) or 1.0
@@ -138,6 +145,18 @@ def nueva_ventana(padre, titulo, ancho=1360, alto=840, fondo=True):
     ventana.resizable(True, True)
     if fondo:
         poner_fondo(ventana)
+
+    # CustomTkinter oculta la ventana al pintar la barra de titulo; en algunos
+    # equipos no vuelve a mostrarse sola. La mostramos cuando ya esta creada.
+    def mostrar():
+        try:
+            if ventana.winfo_exists():
+                ventana.deiconify()
+                ventana.lift()
+        except Exception:
+            pass
+
+    ventana.after(30, mostrar)
     return ventana
 
 def ventana_abierta(padre, atributo):
@@ -163,12 +182,28 @@ def cargar_json(ruta, predeterminado):
             if not contenido:
                 return predeterminado
             return json.loads(contenido)
-    except (FileNotFoundError, json.JSONDecodeError, OSError):
+    except (FileNotFoundError, json.JSONDecodeError, UnicodeDecodeError, OSError):
         return predeterminado
 
+def escribir_archivo(ruta, texto):
+    """Escribe primero en un temporal y luego reemplaza, para no corromper el archivo."""
+    ruta = Path(ruta)
+    temporal = ruta.with_name(ruta.name + ".tmp")
+    try:
+        with open(temporal, "w", encoding="utf-8", newline="") as archivo:
+            archivo.write(texto)
+            archivo.flush()
+            os.fsync(archivo.fileno())
+        os.replace(temporal, ruta)
+    finally:
+        if temporal.exists():
+            try:
+                temporal.unlink()
+            except OSError:
+                pass
+
 def guardar_json(ruta, datos):
-    with open(ruta, "w", encoding="utf-8") as archivo:
-        json.dump(datos, archivo, indent=4, ensure_ascii=False)
+    escribir_archivo(ruta, json.dumps(datos, indent=4, ensure_ascii=False))
 
 def cargar_usuarios():
     datos = cargar_json(RUTA_CUENTAS, {})
@@ -181,10 +216,13 @@ def cargar_animales():
     datos = cargar_json(RUTA_DATOS, {"animales": []})
     if isinstance(datos, dict):
         animales = datos.get("animales", [])
-        return animales if isinstance(animales, list) else []
-    if isinstance(datos, list):
-        return datos
-    return []
+    elif isinstance(datos, list):
+        animales = datos
+    else:
+        return []
+    if not isinstance(animales, list):
+        return []
+    return [animal for animal in animales if isinstance(animal, dict)]
 
 def guardar_animales(animales):
     guardar_json(RUTA_DATOS, {"animales": animales})
@@ -223,15 +261,21 @@ def calcular_edad(fecha_nacimiento):
 
 def formatear_peso(peso):
     try:
-        return f"{float(peso):.1f}"
+        valor = float(peso)
     except (TypeError, ValueError):
         return "—"
+    if not math.isfinite(valor):
+        return "—"
+    return f"{valor:.1f}"
 
 def filtrar_animales(animales, filtros, texto=""):
     texto = str(texto).strip().lower()
     resultado = []
 
     for animal in animales:
+        if not isinstance(animal, dict):
+            continue
+
         if texto:
             nombre = str(animal.get("nombre", "")).lower()
             identificacion = str(animal.get("identificacion", "")).lower()
@@ -252,8 +296,14 @@ def filtrar_animales(animales, filtros, texto=""):
     return resultado
 
 def valores_categoria(animales, categoria):
-    valores = {str(animal.get(categoria) or "").strip() for animal in animales}
-    return sorted((valor for valor in valores if valor), key=str.lower)
+    valores = set()
+    for animal in animales:
+        if not isinstance(animal, dict):
+            continue
+        valor = str(animal.get(categoria) or "").strip()
+        if valor:
+            valores.add(valor)
+    return sorted(valores, key=str.lower)
 
 def formatear_hoja(animal):
     def dato(clave, defecto="—"):
@@ -333,11 +383,20 @@ def iniciar_sesion(root):
         return
 
     usuarios = cargar_usuarios()
+    clave_encontrada = next((clave for clave in usuarios if clave.casefold() == usuario.casefold()), None)
 
-    if usuario in usuarios and usuarios[usuario] == contrasena:
+    if clave_encontrada is not None and usuarios[clave_encontrada] == contrasena:
         mensaje.configure(text="")
-        abrir_menu_principal(root, usuario)
-    elif usuario in usuarios:
+        registro = getattr(root, "ventana_registro_cuenta", None)
+        if registro is not None:
+            try:
+                if registro.winfo_exists():
+                    registro.destroy()
+            except Exception:
+                pass
+            root.ventana_registro_cuenta = None
+        abrir_menu_principal(root, clave_encontrada)
+    elif clave_encontrada is not None:
         mensaje.configure(text="Contraseña incorrecta.", text_color=COLOR_PELIGRO)
     else:
         mensaje.configure(text="Usuario no encontrado.", text_color=COLOR_PELIGRO)
@@ -384,7 +443,7 @@ def abrir_registro_cuenta(root):
             return
 
         cuentas = cargar_usuarios()
-        if nombre_usuario.lower() in (usuario.lower() for usuario in cuentas):
+        if nombre_usuario.casefold() in (usuario.casefold() for usuario in cuentas):
             mensaje.configure(text="Ese usuario ya existe. Elige otro.")
             return
 
@@ -446,7 +505,8 @@ def abrir_menu_principal(root, usuario):
             alto = max(lienzo.winfo_height(), 360)
         except Exception:
             return
-        if abs(ancho - estado["tam"][0]) < 40 and abs(alto - estado["tam"][1]) < 40:
+        anterior_ancho, anterior_alto = estado["tam"]
+        if 0 < ancho <= anterior_ancho and 0 < alto <= anterior_alto:
             return
         estado["tam"] = (ancho, alto)
         lienzo.delete("all")
@@ -578,7 +638,7 @@ def abrir_formulario_animal(principal):
         mensaje.configure(text=texto, text_color=COLOR_PELIGRO)
 
     def limpiar():
-        for campo in (entry_identificacion, entry_nombre, entry_fecha_nacimiento, entry_peso, entry_color, entry_fecha_ingreso):
+        for campo in (entry_identificacion, entry_nombre, entry_fecha_nacimiento, entry_peso, entry_color, entry_procedencia, entry_fecha_ingreso):
             campo.delete(0, "end")
         for combo, valor in ((combo_raza, "Mestizo"), (combo_sexo, "Hembra"), (combo_proposito, "Doble propósito"), (combo_origen, "Criado en la granja"), (combo_estado, "Activo")):
             combo.set(valor)
@@ -635,6 +695,8 @@ def abrir_formulario_animal(principal):
             peso = float(datos["peso"])
         except ValueError:
             return mostrar_error("El peso debe ser un número. Ejemplo: 450 o 450,5.")
+        if not math.isfinite(peso):
+            return mostrar_error("El peso debe ser un número válido.")
         if peso <= 0:
             return mostrar_error("El peso debe ser mayor que cero.")
 
@@ -785,10 +847,15 @@ def abrir_catalogo(principal):
     filtros = {clave: None for clave, _ in CAMPOS_FILTRO}
     categoria_actual = None
     animales_filtrados = []
+    total_actual = 0
+
+    def actualizar_contador():
+        contador.configure(text=f"{len(animales_filtrados)} de {total_actual} animales")
 
     def actualizar_lista():
-        nonlocal animales_filtrados
+        nonlocal animales_filtrados, total_actual
         todos = cargar_animales()
+        total_actual = len(todos)
         animales_filtrados = filtrar_animales(todos, filtros, entry_busqueda.get())
 
         filas = tabla.get_children()
@@ -804,7 +871,7 @@ def abrir_catalogo(principal):
                 animal.get("origen", ""),
             ))
 
-        contador.configure(text=f"{len(animales_filtrados)} de {len(todos)} animales")
+        actualizar_contador()
 
     def indice_seleccionado():
         seleccion = tabla.selection()
@@ -821,6 +888,7 @@ def abrir_catalogo(principal):
     def mostrar_hoja(evento=None):
         indice = indice_seleccionado()
         if indice is None:
+            contador.configure(text="Selecciona un animal en la tabla.")
             return
         animal = animales_filtrados[indice]
         titulo = f"Hoja técnica - {animal.get('nombre', '')}"
@@ -925,6 +993,7 @@ def abrir_catalogo(principal):
 
     tabla.bind("<Double-1>", mostrar_hoja)
     tabla.bind("<Return>", mostrar_hoja)
+    tabla.bind("<<TreeviewSelect>>", lambda event: actualizar_contador())
     catalogo.protocol("WM_DELETE_WINDOW", cerrar_catalogo)
     principal.ventana_catalogo = catalogo
 
@@ -956,32 +1025,32 @@ def abrir_facturacion(principal):
     panel.place(relx=0.5, rely=0.5, anchor="center")
     fijar_ancho(panel, 500)
 
-    etiqueta(panel, "Generar factura", 28, COLOR_TEXTO, negrita=True).pack(pady=(30, 2))
-    etiqueta(panel, "Datos de la venta de bovinos.", 13, COLOR_SECUNDARIO).pack(pady=(0, 18))
+    etiqueta(panel, "Generar factura", 28, COLOR_TEXTO, negrita=True).pack(pady=(22, 2))
+    etiqueta(panel, "Datos de la venta de bovinos.", 13, COLOR_SECUNDARIO).pack(pady=(0, 12))
 
     etiqueta(panel, "Granja", 12, COLOR_SECUNDARIO, anchor="w").pack(fill="x", padx=54)
     entry_granja = entrada(panel, "Nombre de la granja")
-    entry_granja.pack(fill="x", padx=54, pady=(3, 12))
+    entry_granja.pack(fill="x", padx=54, pady=(3, 10))
 
     etiqueta(panel, "Comprador", 12, COLOR_SECUNDARIO, anchor="w").pack(fill="x", padx=54)
     entry_comprador = entrada(panel, "Nombre del comprador")
-    entry_comprador.pack(fill="x", padx=54, pady=(3, 12))
+    entry_comprador.pack(fill="x", padx=54, pady=(3, 10))
 
     etiqueta(panel, "Fecha", 12, COLOR_SECUNDARIO, anchor="w").pack(fill="x", padx=54)
     entry_fecha = entrada(panel, "AAAA-MM-DD")
-    entry_fecha.pack(fill="x", padx=54, pady=(3, 12))
+    entry_fecha.pack(fill="x", padx=54, pady=(3, 10))
     entry_fecha.insert(0, date.today().isoformat())
 
     etiqueta(panel, "Número de vacas", 12, COLOR_SECUNDARIO, anchor="w").pack(fill="x", padx=54)
     entry_vacas = entrada(panel, "Ej: 5")
-    entry_vacas.pack(fill="x", padx=54, pady=(3, 12))
+    entry_vacas.pack(fill="x", padx=54, pady=(3, 10))
 
     etiqueta(panel, "Precio por libra", 12, COLOR_SECUNDARIO, anchor="w").pack(fill="x", padx=54)
     entry_precio = entrada(panel, "Ej: 12000")
-    entry_precio.pack(fill="x", padx=54, pady=(3, 14))
+    entry_precio.pack(fill="x", padx=54, pady=(3, 10))
 
     mensaje = etiqueta(panel, "", 12, COLOR_PELIGRO, wraplength=386, justify="left")
-    mensaje.pack(fill="x", padx=54, pady=(0, 8))
+    mensaje.pack(fill="x", padx=54, pady=(0, 6))
 
     def abrir_vista_factura(texto):
         if ventana_abierta(principal, "ventana_factura_vista"):
@@ -1034,6 +1103,9 @@ def abrir_facturacion(principal):
         mostrar_factura(texto)
         vista.focus_force()
 
+    def mostrar_error(texto):
+        mensaje.configure(text=texto, text_color=COLOR_PELIGRO)
+
     def generar():
         granja = entry_granja.get().strip()
         comprador = entry_comprador.get().strip()
@@ -1042,24 +1114,22 @@ def abrir_facturacion(principal):
         precio_texto = entry_precio.get().strip().replace(",", ".")
 
         if not granja or not comprador or not vacas_texto or not precio_texto:
-            mensaje.configure(text="Llena todos los campos.")
-            return
+            return mostrar_error("Llena todos los campos.")
 
         fecha = validar_fecha(fecha_texto)
         if fecha is None:
-            mensaje.configure(text="La fecha debe tener el formato AAAA-MM-DD.")
-            return
+            return mostrar_error("La fecha debe tener el formato AAAA-MM-DD.")
 
         try:
             vacas = int(vacas_texto)
             precio = float(precio_texto)
         except ValueError:
-            mensaje.configure(text="Las vacas deben ser un entero y el precio un número.")
-            return
+            return mostrar_error("Las vacas deben ser un entero y el precio un número.")
 
+        if not math.isfinite(precio):
+            return mostrar_error("El precio debe ser un número válido.")
         if vacas <= 0 or precio <= 0:
-            mensaje.configure(text="Las vacas y el precio deben ser mayores que cero.")
-            return
+            return mostrar_error("Las vacas y el precio deben ser mayores que cero.")
 
         datos = {
             "Granja": granja,
@@ -1072,12 +1142,16 @@ def abrir_facturacion(principal):
         inicio = "# ==========================================\n#   Facturacion Electronica De Venta\n#   Generado por MiniGan.INC\n#   Correo: MiniGan@outlook.com\n#   PQR: 3**********\n# ==========================================\n"
 
         try:
-            RUTA_FACTURA.write_text(inicio + yaml.dump(datos, allow_unicode=True, default_flow_style=False, sort_keys=False), encoding="utf-8")
+            escribir_archivo(RUTA_FACTURA, inicio + yaml.dump(datos, allow_unicode=True, default_flow_style=False, sort_keys=False))
         except OSError as error:
-            mensaje.configure(text=f"No se pudo guardar la factura: {error}")
-            return
+            return mostrar_error(f"No se pudo guardar la factura: {error}")
 
-        abrir_vista_factura(RUTA_FACTURA.read_text(encoding="utf-8"))
+        try:
+            contenido = RUTA_FACTURA.read_text(encoding="utf-8")
+        except OSError as error:
+            return mostrar_error(f"No se pudo leer la factura: {error}")
+
+        abrir_vista_factura(contenido)
         mensaje.configure(text="Factura generada correctamente.", text_color=COLOR_EXITO)
 
     def cerrar():
@@ -1088,7 +1162,7 @@ def abrir_facturacion(principal):
         principal.ventana_factura = None
 
     boton(panel, "Generar factura", lambda: generar(), "primario").pack(fill="x", padx=54)
-    boton(panel, "Volver", lambda: cerrar(), "texto", alto=34).pack(fill="x", padx=54, pady=(6, 18))
+    boton(panel, "Volver", lambda: cerrar(), "texto", alto=34).pack(fill="x", padx=54, pady=(4, 14))
 
     factura.protocol("WM_DELETE_WINDOW", cerrar)
     principal.ventana_factura = factura
